@@ -6,19 +6,8 @@ Team: Rosalina Torres · Sean Costello · Craig Hobel
 
 ---
 
-## Project Summary
+This project investigates multiple architectural approaches for conversational Text-to-SQL over an NBA spatial shot-chart database. The primary implementation is a CoSQL-inspired conversational pipeline that combines schema-aware prompting, few-shot in-context learning, spatial reasoning, and multi-turn coreference resolution. To provide comparative baselines, the project also implements two neural sequence-generation architectures: (1) a GRU encoder-decoder with Bahdanau attention and (2) a Transformer encoder-decoder, both trained on the same annotated corpus. All architectures are evaluated against a common execution-verified dataset, enabling direct comparison using SQL validity, execution accuracy, and BLEU-4.
 
-Three architectural approaches to conversational Text-to-SQL over NBA shot-chart data,
-evaluated head-to-head on execution accuracy and BLEU-4.
-
-| Model | Architecture | Test Set | Execution Accuracy |
-|---|---|---|---|
-| Few-shot LLM pipeline | DIN-SQL + Claude Opus 4.8 | WOZ 28-pair held-out | **100% (28/28)** |
-| Few-shot LLM pipeline | DIN-SQL + Claude Opus 4.8 | GRU test set (cold) | **83.2% (183/220)** |
-| GRU Seq2Seq | Encoder-decoder (Bahdanau attention) | GRU test set | 97.3% (214/220)* |
-| Transformer | Encoder-decoder (multi-head attention) | GRU test set | 92.7% (204/220) |
-
-*97.3% reflects fixed preprocessing. Original model: 0% — see `evaluation/results/`.
 
 ---
 
