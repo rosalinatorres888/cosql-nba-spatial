@@ -1,0 +1,1679 @@
+
+==================================================
+Question 1: Who put up the biggest point total in one playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT sc.player_id, SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY sc.player_id, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — [(1628401, 38)]
+==================================================
+
+==================================================
+Question 2: Name the player with the most points in any one playoff game.
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — [('Derrick White', '0042300104', 38)]
+==================================================
+
+==================================================
+Question 3: Which Boston player came up shortest on the scoreboard in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS ASC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team ILIKE '%Boston%' AND g.season_type = 'Playoff' GROUP BY p.name ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 4: Name the Boston player with the lowest point total in a playoff game.
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS ASC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' AND p.team = 'BOS' GROUP BY p.name, sc.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 5: Across the postseason, what's the average points in a game?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores
+Predicted SQL (mine): SELECT AVG(score) FROM games WHERE season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 6: What is the overall average for points scored per playoff game?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores
+Predicted SQL (mine): SELECT AVG(score) FROM games WHERE season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 7: What's the per-game scoring average for a chosen player in the playoffs?
+Gold SQL (Craig's):  SELECT AVG(points) FROM player_stats WHERE player_name = ?;
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) as ppg FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Jayson Tatum%') AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(18.789473684210527,)]
+==================================================
+
+==================================================
+Question 8: What's a particular player's average scoring output this postseason?
+Gold SQL (Craig's):  SELECT AVG(points) FROM player_stats WHERE player_name = ?;
+Predicted SQL (mine): SELECT AVG(game_points) AS avg_points FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN games g ON sc.
+DB execution:        ❌ FAILED  — syntax error at end of input
+LINE 1: ... END) AS game_points FROM shot_charts sc JOIN games g ON sc.
+                                                                       ^
+
+==================================================
+
+==================================================
+Question 9: How many times have the Celtics come away with a win this postseason?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM games WHERE winner = 'Boston Celtics';
+Predicted SQL (mine): SELECT COUNT(*) FROM games WHERE season_type = 'Playoff' AND (home_team = 'BOS' OR away_team = 'BOS')
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 10: What's the Celtics' total number of postseason wins?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM games WHERE winner = 'Boston Celtics';
+Predicted SQL (mine): SELECT COUNT(*) FROM games WHERE season_type = 'Playoff' AND (home_team = 'Celtics' OR away_team = 'Celtics')
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 11: Who took the win in that playoff game?
+Gold SQL (Craig's):  SELECT winner FROM games WHERE game_id = num
+Predicted SQL (mine): SELECT home_team, away_team, score FROM games WHERE season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [('Boston Celtics', 'DAL', None), ('DAL', 'Boston Celtics', None)]
+==================================================
+
+==================================================
+Question 12: Which side won a given postseason contest?
+Gold SQL (Craig's):  SELECT winner FROM games WHERE game_id = num
+Predicted SQL (mine): SELECT home_team, away_team, score FROM games WHERE season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [('Boston Celtics', 'DAL', None), ('DAL', 'Boston Celtics', None)]
+==================================================
+
+==================================================
+Question 13: How many times have the Celtics come up short this postseason?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM games WHERE loser = 'Boston Celtics';
+Predicted SQL (mine): 
+DB execution:        ❌ FAILED  — empty prediction
+==================================================
+
+==================================================
+Question 14: What's the Celtics' total number of postseason losses?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM games WHERE loser = 'Boston Celtics';
+Predicted SQL (mine): SELECT COUNT(*) FROM games WHERE season_type = 'Playoff' AND (home_team = 'Celtics' OR away_team = 'Celtics')
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 15: Who took the loss in that playoff game?
+Gold SQL (Craig's):  SELECT CASE WHEN home_score > away_score THEN away_team ELSE home_team END AS loser FROM games WHERE game_id = num;
+Predicted SQL (mine): SELECT home_team, away_team, score FROM games WHERE season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [('Boston Celtics', 'DAL', None), ('DAL', 'Boston Celtics', None)]
+==================================================
+
+==================================================
+Question 16: Which side fell in a given postseason contest?
+Gold SQL (Craig's):  SELECT CASE WHEN home_score > away_score THEN away_team ELSE home_team END AS loser FROM games WHERE game_id = num;
+Predicted SQL (mine): SELECT home_team, away_team FROM games WHERE season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [('Boston Celtics', 'DAL'), ('DAL', 'Boston Celtics')]
+==================================================
+
+==================================================
+Question 17: Which Boston player lit it up for the most points in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team ILIKE '%Boston%' AND g.season_type = 'Playoff' GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 18: Name the Boston player with the highest point total in a playoff game.
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, SUM(CASE WHEN sc.shot_type = '3PT Field Goal' THEN 3 ELSE 2 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team ILIKE '%Boston%' AND g.season_type = 'Playoff' AND sc.made_flag = 1 GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 19: On average, how many points is Tatum putting up for Boston in the playoffs?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT AVG(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id JOIN players p ON sc.player_id = p.player_id WHERE p.name ILIKE '%Tatum%' AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ✅ SUCCESS — [(Decimal('18.7894736842105263'),)]
+==================================================
+
+==================================================
+Question 20: What's Tatum's per-game scoring average with the Celtics in the playoffs?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END)::FLOAT / COUNT(DISTINCT sc.game_id) AS points_per_game FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Tatum%') AND g.season_type = 'Playoff'
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 21: What's Jaylen Brown's playoff points-per-game average for the Celtics?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) as ppg FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Jaylen Brown%') AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(20.31578947368421,)]
+==================================================
+
+==================================================
+Question 22: In the playoffs, what's Jaylen Brown's scoring average for Boston?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) AS scoring_average FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Jaylen Brown%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(20.31578947368421,)]
+==================================================
+
+==================================================
+Question 23: How many points does Horford average for Boston this postseason?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Horford%' AND p.team = 'Boston' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 24: What is Al Horford's mean point total per playoff game with the Celtics?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT AVG(game_points) as mean_points FROM (SELECT game_id, SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) as game_points FROM shot_charts WHERE player_id = (SELECT player_id FROM players WHERE name = 'Al Horford') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id) as per_game
+DB execution:        ✅ SUCCESS — [(Decimal('8.7894736842105263'),)]
+==================================================
+
+==================================================
+Question 25: What's White's per-game scoring average with the Celtics in the playoffs?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.made_flag = 1 THEN (CASE WHEN sc.shot_type = '3PT Field Goal' THEN 3 ELSE 2 END) ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%White%' AND p.team ILIKE '%Celtics%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 26: How many points a night does White put up for Boston in the postseason?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Derrick White' AND p.team = 'Boston Celtics' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 27: In the playoffs, what's Jrue Holiday's scoring average for Boston?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN s.made_flag = 1 AND s.shot_type = '3PT Field Goal' THEN 3 WHEN s.made_flag = 1 AND s.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name ILIKE '%Jrue Holiday%' AND p.team ILIKE '%Boston%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 28: What's Holiday's playoff scoring average in a Celtics uniform?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN s.made_flag = 1 AND s.shot_type = '3PT Field Goal' THEN 3 WHEN s.made_flag = 1 AND s.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT s.game_id) AS scoring_average
+FROM shot_charts s
+JOIN players p ON s.player_id = p.player_id
+JOIN games g ON s.game_id = g.game_id
+WHERE p.name LIKE '%Holiday%' AND p.team = 'Boston Celtics' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 29: What is Kristaps Porzingis's mean point total per playoff game with the Celtics?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT AVG(game_points) FROM (SELECT game_id, SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 THEN 2 ELSE 0 END) AS game_points FROM shot_charts WHERE player_id = (SELECT player_id FROM players WHERE name = 'Kristaps Porzingis') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id) t
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 30: On the whole, how many points does Porzingis score per playoff game for Boston?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) AS points_per_game FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Porzingis%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 31: How many points a night does Hauser put up for Boston in the postseason?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Sam Hauser' AND p.team = 'Boston Celtics' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 32: What is Sam Hauser's average points per game in the playoffs?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT AVG(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Sam Hauser' AND g.season_type = 'Playoff' GROUP BY sc.game_id) AS per_game
+DB execution:        ✅ SUCCESS — [(Decimal('5.2105263157894737'),)]
+==================================================
+
+==================================================
+Question 33: What's Pritchard's playoff scoring average in a Celtics uniform?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN s.made_flag = 1 AND s.shot_type = '3PT Field Goal' THEN 3 WHEN s.made_flag = 1 AND s.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name ILIKE '%Pritchard%' AND p.team ILIKE '%Boston%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 34: How many points per game does Payton Pritchard average for Boston in the postseason?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN made_flag=1 AND shot_type='3PT Field Goal' THEN 3 WHEN made_flag=1 AND shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Payton Pritchard%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(6.166666666666667,)]
+==================================================
+
+==================================================
+Question 35: On the whole, how many points does Kornet score per playoff game for Boston?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) AS points_per_game FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Kornet%') AND g.season_type = 'Playoff'
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 36: What is Kornet's average scoring output per playoff game with the Celtics?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN made_flag=1 AND shot_type='3PT Field Goal' THEN 3 WHEN made_flag=1 AND shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Kornet%' AND p.team = 'Celtics' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 37: What is Oshae Brissett's average points per game in the playoffs?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN shot_type = '3PT Field Goal' AND made_flag = 1 THEN 3 WHEN shot_type = '2PT Field Goal' AND made_flag = 1 THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Oshae Brissett%') AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(3.5,)]
+==================================================
+
+==================================================
+Question 38: On average, how many points is Brissett putting up for Boston in the playoffs?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Brissett%' AND p.team ILIKE '%Boston%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 39: How many points per game does Svi Mykhailiuk average for Boston in the postseason?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name = 'Svi Mykhailiuk' AND p.team = 'Boston' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 40: What's Svi Mykhailiuk's playoff points-per-game average for the Celtics?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Svi Mykhailiuk' AND p.team = 'Celtics' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 41: What is Queta's average scoring output per playoff game with the Celtics?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END)::FLOAT / COUNT(DISTINCT sc.game_id) AS avg_points_per_game FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Queta' AND p.team = 'Celtics' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 42: How many points does Queta average for Boston this postseason?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN s.made_flag = 1 AND s.shot_type = '3PT Field Goal' THEN 3 WHEN s.made_flag = 1 AND s.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name = 'Neemias Queta' AND p.team = 'Boston Celtics' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 43: On average, how many points is Springer putting up for Boston in the playoffs?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Springer%' AND p.team ILIKE '%Boston%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 44: What's Springer's per-game scoring average with the Celtics in the playoffs?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Springer%' AND p.team = 'Boston Celtics' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 45: What's Xavier Tillman's playoff points-per-game average for the Celtics?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Xavier Tillman%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(1.8333333333333333,)]
+==================================================
+
+==================================================
+Question 46: In the playoffs, what's Xavier Tillman's scoring average for Boston?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Xavier Tillman%' AND p.team = 'Boston' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 47: How many points does Walsh average for Boston this postseason?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT CAST(SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS FLOAT) / COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Walsh%' AND p.team = 'Boston' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 48: What is Jordan Walsh's mean point total per playoff game with the Celtics?
+Gold SQL (Craig's):  SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT AVG(game_points) FROM (
+  SELECT sc.game_id,
+         SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3
+                  WHEN sc.made_flag = 1 THEN 2
+                  ELSE 0 END) AS game_points
+  FROM shot_charts sc
+  JOIN players p ON sc.player_id = p.player_id
+DB execution:        ❌ FAILED  — syntax error at end of input
+LINE 7:   JOIN players p ON sc.player_id = p.player_id
+                                                      ^
+
+==================================================
+
+==================================================
+Question 49: How many points did Tatum pour in during his best playoff game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Tatum%') AND g.season_type = 'Playoff' GROUP BY sc.game_id) AS per_game
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 50: What's the peak point total Tatum put up in a playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT game_id, SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name = 'Jayson Tatum') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id) AS per_game
+DB execution:        ✅ SUCCESS — [(29,)]
+==================================================
+
+==================================================
+Question 51: What's Jaylen Brown's playoff career high in points for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT game_id, SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts WHERE player_id = (SELECT player_id FROM players WHERE name ILIKE '%Jaylen Brown%') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id) AS per_game
+DB execution:        ✅ SUCCESS — [(32,)]
+==================================================
+
+==================================================
+Question 52: What's the highest Brown has scored in a postseason game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT g.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Brown%' AND p.team = 'Boston' AND g.season_type = 'Playoff' GROUP BY g.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 53: What's the most points Horford has dropped in a playoff game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) as most_points FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) as game_points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Horford%') AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 54: What was the most points Al Horford scored in a single playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) as game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Al Horford%' AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ✅ SUCCESS — [(23,)]
+==================================================
+
+==================================================
+Question 55: What's the peak point total White put up in a playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT SUM(CASE WHEN shot_type = '3PT Field Goal' AND made_flag = 1 THEN 3 WHEN shot_type = '2PT Field Goal' AND made_flag = 1 THEN 2 ELSE 0 END) as game_points FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name LIKE '%White%' AND team = 'Boston Celtics') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id) sub
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 56: What was White's biggest scoring night of the playoffs for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT g.date, SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%White%' AND p.team = 'Boston' AND g.season_type = 'Playoff' GROUP BY g.date ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 57: What's the highest Holiday has scored in a postseason game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT game_id, SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name LIKE '%Holiday%' AND team = 'Boston') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 58: What's Holiday's single-game scoring high in the postseason with the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN shot_type = '3PT Field Goal' THEN 3 ELSE 2 END) AS points
+FROM shot_charts
+WHERE made_flag = 1
+  AND player_id IN (SELECT player_id FROM players WHERE name LIKE '%Holiday%' AND team = 'Celtics')
+  AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff')
+GROUP BY game_id
+ORDER BY points DESC
+LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 59: What was the most points Kristaps Porzingis scored in a single playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) as game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Kristaps Porzingis%' AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 60: How many points were in Porzingis's top scoring playoff game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points
+FROM shot_charts sc
+JOIN players p ON sc.player_id = p.player_id
+JOIN games g ON sc.game_id = g.game_id
+WHERE p.name = 'Kristaps Porzingis' AND g.season_type = 'Playoff'
+GROUP BY sc.game_id
+ORDER BY points DESC
+LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 61: What was Hauser's biggest scoring night of the playoffs for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT sc.game_id, SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Hauser%') AND g.season_type = 'Playoff' GROUP BY sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — [('0042300105', 17)]
+==================================================
+
+==================================================
+Question 62: What is Sam Hauser's highest-scoring playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT sc.game_id, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Sam Hauser' AND g.season_type = 'Playoff' GROUP BY sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — [('0042300105', 17)]
+==================================================
+
+==================================================
+Question 63: What's Pritchard's single-game scoring high in the postseason with the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name LIKE '%Pritchard%') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — [(14,)]
+==================================================
+
+==================================================
+Question 64: What is Pritchard's best point total in a Boston playoff game?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) AS best_points FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 THEN CASE WHEN sc.shot_type = '3PT Field Goal' THEN 3 ELSE 2 END ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Pritchard%' AND p.team = 'Boston' AND g.season_type = 'Playoff' GROUP BY sc.game_id) t
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 65: How many points were in Kornet's top scoring playoff game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Kornet%') AND g.season_type = 'Playoff' GROUP BY sc.game_id) AS per_game
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 66: How many points did Luke Kornet score in his best playoff outing for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Luke Kornet%' AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ✅ SUCCESS — [(8,)]
+==================================================
+
+==================================================
+Question 67: What is Oshae Brissett's highest-scoring playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT game_id, SUM(CASE WHEN shot_type = '3PT Field Goal' AND made_flag = 1 THEN 3 WHEN shot_type = '2PT Field Goal' AND made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts WHERE player_id = (SELECT player_id FROM players WHERE name ILIKE '%Oshae Brissett%') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — [('0042300404', 5)]
+==================================================
+
+==================================================
+Question 68: How many points did Brissett pour in during his best playoff game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag=1 AND shot_type='3PT Field Goal' THEN 3 WHEN made_flag=1 AND shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Brissett%') AND g.season_type = 'Playoff' GROUP BY sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — [(5,)]
+==================================================
+
+==================================================
+Question 69: What is Mykhailiuk's best point total in a Boston playoff game?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Mykhailiuk%' AND g.season_type = 'Playoff' AND (g.home_team = 'Boston' OR g.away_team = 'Boston') GROUP BY sc.game_id) sub
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 70: What's Svi Mykhailiuk's playoff career high in points for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Svi Mykhailiuk' AND p.team = 'Celtics' AND g.season_type = 'Playoff' GROUP BY sc.game_id) AS per_game
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 71: How many points did Neemias Queta score in his best playoff outing for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(pts) FROM (SELECT SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) AS pts FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Neemias Queta' AND g.season_type =
+DB execution:        ❌ FAILED  — syntax error at end of input
+LINE 1: ...g.game_id WHERE p.name = 'Neemias Queta' AND g.season_type =
+                                                                       ^
+
+==================================================
+
+==================================================
+Question 72: What's the most points Queta has dropped in a playoff game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Queta%' AND p.team = 'Boston' AND g.season_type = 'Playoff' GROUP BY sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 73: How many points did Springer pour in during his best playoff game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 THEN CASE WHEN sc.shot_type = '3PT Field Goal' THEN 3 ELSE 2 END ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Springer%' AND g.season_type = 'Playoff' GROUP BY sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — [(2,)]
+==================================================
+
+==================================================
+Question 74: What's the peak point total Springer put up in a playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT game_id, SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name ILIKE '%Springer%') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id) AS per_game
+DB execution:        ✅ SUCCESS — [(2,)]
+==================================================
+
+==================================================
+Question 75: What's Xavier Tillman's playoff career high in points for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Xavier Tillman' AND p.team = 'Boston Celtics' AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 76: What's the highest Tillman has scored in a postseason game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT sc.game_id, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id=p.player_id JOIN games g ON sc.game_id=g.game_id WHERE p.name LIKE '%Tillman%' AND g.season_type='Playoff' AND p.team='Boston' GROUP BY sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 77: What's the most points Walsh has dropped in a playoff game for Boston?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) as game_points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Walsh%') AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 78: What was the most points Jordan Walsh scored in a single playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MAX(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) as game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Jordan Walsh' AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ✅ SUCCESS — [(2,)]
+==================================================
+
+==================================================
+Question 79: How few points did Tatum manage in his quietest playoff game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT game_id, SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts WHERE player_id = (SELECT player_id FROM players WHERE name ILIKE '%Tatum%') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id ORDER BY points
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 80: What's the lowest point total Tatum put up in a playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Jayson Tatum' AND g.season_type = 'Playoff' GROUP BY sc.game_id) AS per_game
+DB execution:        ✅ SUCCESS — [(9,)]
+==================================================
+
+==================================================
+Question 81: What's Jaylen Brown's lowest postseason point total for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(game_points) AS lowest_points FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Jaylen Brown%') AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ✅ SUCCESS — [(7,)]
+==================================================
+
+==================================================
+Question 82: What's the fewest Brown has scored in a postseason game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(game_points) AS fewest_points FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Brown%' AND team = 'Boston') AND g.season_type = 'Playoff' GROUP BY sc.game_id) AS per_game
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 83: What's the fewest points Horford has scored in a playoff game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(game_points) FROM (
+  SELECT game_id, SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points
+  FROM shot_charts
+  WHERE player_id IN (SELECT player_id FROM players WHERE name ILIKE '%Horford%' AND team ILIKE '%Boston%')
+    AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff')
+  GROUP BY game_id
+) AS per_game
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 84: What was the fewest points Al Horford scored in a single playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT g.game_id, g.date, SUM(CASE WHEN sc.made_flag = 1 THEN CASE WHEN sc.shot_type = '3PT Field Goal' THEN 3 ELSE 2 END ELSE 0 END) AS points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id JOIN players p ON sc.player_id = p.player_id WHERE p.name ILIKE '%Al Horford%' AND g.season_type = 'Playoff' GROUP BY g.game_id, g.date ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — [('0042300203', datetime.date(2024, 5, 11), 2)]
+==================================================
+
+==================================================
+Question 85: What's the lowest point total White put up in a playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id WHERE p.name = 'White' AND p.team = 'Celtics' AND sc.game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY sc.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 86: What was White's coldest scoring night of the playoffs for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT g.date, CAST(SUM(CASE WHEN sc.made_flag=1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) AS fg_pct FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'White' AND p.team = 'Boston' AND g.season_type = 'Playoff' GROUP BY g.date ORDER BY fg_pct ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 87: What's the fewest Holiday has scored in a postseason game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Holiday%' AND p.team ILIKE '%Boston%' AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 88: What's Holiday's single-game scoring low in the postseason with the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id JOIN players p ON sc.player_id = p.player_id WHERE p.name LIKE '%Holiday%' AND p.team = 'Celtics' AND g.season_type = 'Playoff' GROUP BY sc.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 89: What was the fewest points Kristaps Porzingis scored in a single playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name = 'Kristaps Porzingis') AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 90: How many points were in Porzingis's quietest scoring playoff game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(pts) FROM (SELECT sc.game_id, SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 THEN 2 ELSE 0 END) AS pts FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Kristaps Porzingis' AND p.team = 'Boston' AND g.season_type = 'Playoff' GROUP BY sc.game_id) t
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 91: What was Hauser's coldest scoring night of the playoffs for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT g.date, CAST(SUM(CASE WHEN sc.made_flag=1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) AS fg_pct
+FROM shot_charts sc
+JOIN players p ON sc.player_id = p.player_id
+JOIN games g ON sc.game_id = g.game_id
+WHERE p.name LIKE '%Hauser%' AND p.team = 'Boston Celtics' AND g.season_type = 'Playoff'
+GROUP BY g.date
+ORDER BY fg_pct ASC
+LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 92: What is Sam Hauser's lowest-scoring playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Sam Hauser%') AND g.season_type = 'Playoff' GROUP BY sc.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — [('0042300201', 0)]
+==================================================
+
+==================================================
+Question 93: What's Pritchard's single-game scoring low in the postseason with the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT g.game_id, g.date, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN games g ON sc.game_id=g.game_id JOIN players p ON sc.player_id=p.player_id WHERE p.name LIKE '%Pritchard%' AND p.team='Boston Celtics' AND g.season_type='Playoff' GROUP BY g.game_id, g.date ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 94: What is Pritchard's smallest point total in a Boston playoff game?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT g.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Pritchard%' AND g.season_type = 'Playoff' GROUP BY g.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — [('0042300104', 0)]
+==================================================
+
+==================================================
+Question 95: How many points were in Kornet's quietest scoring playoff game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN shot_type = '3PT Field Goal' AND made_flag = 1 THEN 3 WHEN shot_type = '2PT Field Goal' AND made_flag = 1 THEN 2 ELSE 0 END) AS points
+FROM shot_charts sc
+JOIN players p ON sc.player_id = p.player_id
+JOIN games g ON sc.game_id = g.game_id
+WHERE p.name ILIKE '%Kornet%' AND p.team ILIKE '%Boston%' AND g.season_type = 'Playoff'
+GROUP BY sc.game_id
+ORDER BY points ASC
+LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 96: How many points did Luke Kornet score in his worst playoff outing for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Luke Kornet' AND g.season_type = 'Playoff' GROUP BY sc.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 97: What is Oshae Brissett's lowest-scoring playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT game_id, SUM(CASE WHEN made_flag=1 AND shot_type='3PT Field Goal' THEN 3 WHEN made_flag=1 AND shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name ILIKE '%Oshae Brissett%') AND game_id IN (SELECT game_id FROM games WHERE season_type='Playoff') GROUP BY game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — [('0042300302', 2)]
+==================================================
+
+==================================================
+Question 98: How few points did Brissett manage in his quietest playoff game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Brissett%') AND g.season_type = 'Playoff' GROUP BY sc.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — [(2,)]
+==================================================
+
+==================================================
+Question 99: What is Mykhailiuk's smallest point total in a Boston playoff game?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(pts) FROM (
+  SELECT sc.game_id,
+         SUM(CASE WHEN sc.made_flag = 1
+                  THEN CASE WHEN sc.shot_type = '3PT Field Goal' THEN 3 ELSE 2 END
+                  ELSE 0 END) AS pts
+DB execution:        ❌ FAILED  — syntax error at end of input
+LINE 5:                   ELSE 0 END) AS pts
+                                            ^
+
+==================================================
+
+==================================================
+Question 100: What's Svi Mykhailiuk's lowest postseason point total for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(game_points) AS lowest_points FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Svi Mykhailiuk' AND p.team = 'Celtics' AND g.season_type = 'Playoff' GROUP BY sc.game_id) AS per_game
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 101: How many points did Neemias Queta score in his worst playoff outing for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points
+FROM shot_charts sc
+JOIN players p ON sc.player_id = p.player_id
+JOIN games g ON sc.game_id = g.game_id
+WHERE p.name = 'Neemias Queta' AND g.season_type = 'Playoff'
+GROUP BY sc.game_id
+ORDER BY points ASC
+LIMIT 1
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 102: What's the fewest points Queta has scored in a playoff game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(pts) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) as pts FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Queta%') AND g.season_type = 'Playoff' GROUP BY sc.game_id) t
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 103: How few points did Springer manage in his quietest playoff game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Springer%') AND g.season_type = 'Playoff' GROUP BY sc.game_id) sub
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 104: What's the lowest point total Springer put up in a playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT game_id, SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name LIKE '%Springer%' AND team = 'Celtics') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff') GROUP BY game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 105: What's Xavier Tillman's lowest postseason point total for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(game_points) FROM (SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Xavier Tillman' AND g.season_type = 'Playoff' GROUP BY sc.game_id) AS per_game
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 106: What's the fewest Tillman has scored in a postseason game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(game_points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS game_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Tillman%' AND g.season_type = 'Playoff' GROUP BY sc.game_id) t
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 107: What's the fewest points Walsh has scored in a playoff game for Boston?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(points) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Walsh%' AND team = 'Boston') AND g.season_type = 'Playoff' GROUP BY sc.game_id) t
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 108: What was the fewest points Jordan Walsh scored in a single playoff game for the Celtics?
+Gold SQL (Craig's):  SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Predicted SQL (mine): SELECT MIN(pts) FROM (SELECT sc.game_id, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) AS pts FROM shot_charts sc JOIN players p ON sc.player_id=p.player_id JOIN games g ON sc.game_id=g.game_id WHERE p.name='Jordan Walsh' AND g.season_type='Playoff' GROUP BY sc.game_id) t
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 109: Which Mavericks player led the way with the top scoring game of the playoffs?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team ILIKE '%Mavericks%' AND g.season_type = 'Playoff' GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 110: Who dropped the most points in a playoff game for Dallas?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' AND p.team = 'Dallas' GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 111: Which Miami player lit it up for the most points in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team ILIKE '%Miami%' AND g.season_type = 'Playoff' GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 112: Name the Miami player with the highest point total in a playoff game.
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team = 'Miami' AND g.season_type = 'Playoff' GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 113: Which Cavaliers player led the way with the top scoring game of the playoffs?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' AND p.team ILIKE '%Cleveland%' GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 114: Who dropped the most points in a playoff game for Cleveland?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' AND p.team = 'Cleveland' GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 115: Which Indiana player lit it up for the most points in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team = 'Indiana' AND g.season_type = 'Playoff' GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 116: Name the Indiana player with the highest point total in a playoff game.
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS DESC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team ILIKE '%Indiana%' AND g.season_type = 'Playoff' GROUP BY p.name, sc.game_id ORDER BY points DESC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 117: Which Mavericks player had the smallest scoring output in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS ASC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team ILIKE '%Mavericks%' AND g.season_type = 'Playoff' GROUP BY p.name, sc.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 118: Who scored the fewest points in a playoff game for Dallas?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS ASC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 THEN CASE WHEN sc.shot_type = '3PT Field Goal' THEN 3 ELSE 2 END ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' AND p.team ILIKE '%Dallas%' GROUP BY p.name, sc.game_id OR
+DB execution:        ❌ FAILED  — syntax error at end of input
+LINE 1: ...' AND p.team ILIKE '%Dallas%' GROUP BY p.name, sc.game_id OR
+                                                                       ^
+
+==================================================
+
+==================================================
+Question 119: Which Miami player came up shortest on the scoreboard in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS ASC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3
+DB execution:        ❌ FAILED  — syntax error at end of input
+LINE 1: ... sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3
+                                                                       ^
+
+==================================================
+
+==================================================
+Question 120: Name the Miami player with the lowest point total in a playoff game.
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS ASC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team = 'Miami' AND g.season_type = 'Playoff' GROUP BY p.name, sc.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 121: Which Cavaliers player had the smallest scoring output in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS ASC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, SUM(CASE WHEN sc.shot_type = '3PT Field Goal' THEN 3 ELSE 2 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.team ILIKE '%Cavaliers%' AND g.season_type = 'Playoff' AND sc.made_flag = 1 GROUP BY p.name, sc.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 122: Who scored the fewest points in a playoff game for Cleveland?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS ASC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' AND p.team = 'CLE' GROUP BY p.name, sc.game_id ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 123: Which Indiana player came up shortest on the scoreboard in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS ASC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' AND p.team ILIKE '%Indiana%' GROUP BY p.name ORDER BY points ASC LIMIT 1
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 124: Name the Indiana player with the lowest point total in a playoff game.
+Gold SQL (Craig's):  SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS ASC LIMIT 1;
+Predicted SQL (mine): SELECT p.name, SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc J
+DB execution:        ❌ FAILED  — syntax error at or near "J"
+LINE 1: ..._flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc J
+                                                                      ^
+
+==================================================
+
+==================================================
+Question 125: How many points has Tatum piled up in the postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Tatum%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(357,)]
+==================================================
+
+==================================================
+Question 126: What's Tatum's cumulative playoff scoring total?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+Predicted SQL (mine): SELECT SUM(CASE WHEN shot_type = '3PT Field Goal' THEN 3 ELSE 2 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Tatum%' AND g.season_type = 'Playoff' AND sc.made_flag = 1
+DB execution:        ✅ SUCCESS — [(357,)]
+==================================================
+
+==================================================
+Question 127: What's Jaylen Brown's total point production in the postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) AS total_points FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Jaylen Brown%') AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(386,)]
+==================================================
+
+==================================================
+Question 128: Overall, how many points has Jaylen Brown netted in the postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Jaylen Brown%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(386,)]
+==================================================
+
+==================================================
+Question 129: What's Horford's combined playoff point total?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+Predicted SQL (mine): SELECT SUM(CASE WHEN shot_type = '3PT Field Goal' THEN 3 ELSE 2 END) FROM shot_charts WHERE made_flag = 1 AND player_id IN (SELECT player_id FROM players WHERE name LIKE '%Horford%') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff')
+DB execution:        ✅ SUCCESS — [(167,)]
+==================================================
+
+==================================================
+Question 130: What is the sum of all points Al Horford has scored in the playoffs?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Al Horford%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(167,)]
+==================================================
+
+==================================================
+Question 131: What's White's cumulative playoff scoring total?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag=1 AND shot_type='3PT Field Goal' THEN 3 WHEN made_flag=1 AND shot_type='2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name LIKE '%White%') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff')
+DB execution:        ✅ SUCCESS — [(283,)]
+==================================================
+
+==================================================
+Question 132: How many playoff points has White accumulated in all?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%White%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(283,)]
+==================================================
+
+==================================================
+Question 133: Overall, how many points has Jrue Holiday netted in the postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Jrue Holiday%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(229,)]
+==================================================
+
+==================================================
+Question 134: Across all his playoff games, how many points has Holiday tallied?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Holiday%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(229,)]
+==================================================
+
+==================================================
+Question 135: What is the sum of all points Kristaps Porzingis has scored in the playoffs?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Kristaps Porzingis%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 136: Added up, how many points has Porzingis put on the board in the playoffs?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.shot_type = '3PT Field Goal' THEN 3 ELSE 2 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Porzingis%' AND g.season_type = 'Playoff' AND sc.made_flag = 1
+DB execution:        ✅ SUCCESS — [(None,)]
+==================================================
+
+==================================================
+Question 137: How many playoff points has Hauser accumulated in all?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' AND sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Hauser%')
+DB execution:        ✅ SUCCESS — [(99,)]
+==================================================
+
+==================================================
+Question 138: How many total points has Sam Hauser scored in the playoffs?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+Predicted SQL (mine): SELECT SUM(CASE WHEN shot_type = '3PT Field Goal' AND made_flag = 1 THEN 3 WHEN shot_type = '2PT Field Goal' AND made_flag = 1 THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Sam Hauser%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(99,)]
+==================================================
+
+==================================================
+Question 139: Across all his playoff games, how many points has Pritchard tallied?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id=p.player_id JOIN games g ON sc.game_id=g.game_id WHERE p.name ILIKE '%Pritchard%' AND g.season_type='Playoff'
+DB execution:        ✅ SUCCESS — [(111,)]
+==================================================
+
+==================================================
+Question 140: How many points has Payton Pritchard scored overall this postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Payton Pritchard%') AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(111,)]
+==================================================
+
+==================================================
+Question 141: Added up, how many points has Kornet put on the board in the playoffs?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+Predicted SQL (mine): SELECT SUM(CASE WHEN shot_type = '3PT Field Goal' THEN 3 ELSE 2 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Kornet%' AND sc.made_flag = 1 AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(28,)]
+==================================================
+
+==================================================
+Question 142: What's the grand total of points Kornet has scored these playoffs?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS total_points FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name LIKE '%Kornet%') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff')
+DB execution:        ✅ SUCCESS — [(28,)]
+==================================================
+
+==================================================
+Question 143: How many total points has Oshae Brissett scored in the playoffs?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Oshae Brissett' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(14,)]
+==================================================
+
+==================================================
+Question 144: How many points has Brissett piled up in the postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag=1 AND shot_type='3PT Field Goal' THEN 3 WHEN made_flag=1 AND shot_type='2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id=p.player_id JOIN games g ON sc.game_id=g.game_id WHERE p.name LIKE '%Brissett%' AND g.season_type='Playoff'
+DB execution:        ✅ SUCCESS — [(14,)]
+==================================================
+
+==================================================
+Question 145: How many points has Svi Mykhailiuk scored overall this postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.shot_type = '3PT Field Goal' AND sc.made_flag = 1 THEN 3 WHEN sc.shot_type = '2PT Field Goal' AND sc.made_flag = 1 THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Svi Mykhailiuk' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(8,)]
+==================================================
+
+==================================================
+Question 146: What's Svi Mykhailiuk's total point production in the postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+Predicted SQL (mine): SELECT SUM(CASE WHEN shot_type = '3PT Field Goal' AND made_flag = 1 THEN 3 WHEN shot_type = '2PT Field Goal' AND made_flag = 1 THEN 2 ELSE 0 END) as total_points FROM shot_charts WHERE player_id = (SELECT player_id FROM players WHERE name = 'Svi Mykhailiuk') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff')
+DB execution:        ✅ SUCCESS — [(8,)]
+==================================================
+
+==================================================
+Question 147: What's the grand total of points Queta has scored these playoffs?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) as total_points FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name = 'Neemias Queta') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff')
+DB execution:        ✅ SUCCESS — [(4,)]
+==================================================
+
+==================================================
+Question 148: What's Queta's combined playoff point total?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Queta%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(4,)]
+==================================================
+
+==================================================
+Question 149: How many points has Springer piled up in the postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.shot_type = '3PT Field Goal' THEN 3 ELSE 2 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Springer%' AND sc.made_flag = 1 AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(4,)]
+==================================================
+
+==================================================
+Question 150: What's Springer's cumulative playoff scoring total?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+Predicted SQL (mine): SELECT SUM(CASE WHEN made_flag = 1 AND shot_type = '3PT Field Goal' THEN 3 WHEN made_flag = 1 AND shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS total_points FROM shot_charts WHERE player_id IN (SELECT player_id FROM players WHERE name ILIKE '%Springer%') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff')
+DB execution:        ✅ SUCCESS — [(4,)]
+==================================================
+
+==================================================
+Question 151: What's Xavier Tillman's total point production in the postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS total_points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Xavier Tillman' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(11,)]
+==================================================
+
+==================================================
+Question 152: Overall, how many points has Xavier Tillman netted in the postseason?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Xavier Tillman%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(11,)]
+==================================================
+
+==================================================
+Question 153: What's Walsh's combined playoff point total?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+Predicted SQL (mine): SELECT SUM(CASE WHEN s.made_flag = 1 AND s.shot_type = '3PT Field Goal' THEN 3 WHEN s.made_flag = 1 AND s.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name LIKE '%Walsh%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(2,)]
+==================================================
+
+==================================================
+Question 154: What is the sum of all points Jordan Walsh has scored in the playoffs?
+Gold SQL (Craig's):  SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+Predicted SQL (mine): SELECT SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Jordan Walsh%') AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(2,)]
+==================================================
+
+==================================================
+Question 155: How many times has Tatum suited up in the postseason?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Tatum%') AND g.season_type = 'Playoff'
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 156: How many postseason contests has Jayson Tatum featured in?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Jayson Tatum%') AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 157: How many games has Brown appeared in this postseason?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Brown%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 158: What's the total number of playoff games Jaylen Brown has played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) as playoff_games FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Jaylen Brown' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 159: How many playoff games has Horford appeared in?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id JOIN players p ON sc.player_id = p.player_id WHERE p.name ILIKE '%Horford%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 160: In how many playoff games has Al Horford played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+Predicted SQL (mine): SELECT COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name = 'Al Horford' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 161: How many postseason contests has Derrick White featured in?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name = 'Derrick White' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 162: How many playoff appearances does Derrick White have?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+Predicted SQL (mine): SELECT COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name = 'Derrick White' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 163: What's the total number of playoff games Jrue Holiday has played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+Predicted SQL (mine): SELECT COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name = 'Jrue Holiday' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 164: What's Jrue Holiday's total playoff games-played count?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Jrue Holiday%') AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 165: In how many playoff games has Kristaps Porzingis played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Kristaps Porzingis%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 166: What's the count of playoff games Porzingis has played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+Predicted SQL (mine): SELECT COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name ILIKE '%Porzingis%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 167: How many playoff appearances does Sam Hauser have?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+Predicted SQL (mine): SELECT COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name ILIKE '%Sam Hauser%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 168: How many playoff games has Sam Hauser played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+Predicted SQL (mine): SELECT COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name ILIKE '%Sam Hauser%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(19,)]
+==================================================
+
+==================================================
+Question 169: What's Payton Pritchard's total playoff games-played count?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE sc.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Payton Pritchard%') AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(18,)]
+==================================================
+
+==================================================
+Question 170: What is the number of playoff games Pritchard has played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+Predicted SQL (mine): SELECT COUNT(DISTINCT game_id) FROM shot_charts WHERE player_id = (SELECT player_id FROM players WHERE name ILIKE '%Pritchard%') AND game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff')
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 171: What's the count of playoff games Kornet has played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Kornet%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(10,)]
+==================================================
+
+==================================================
+Question 172: In how many postseason games has Kornet taken the floor?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+Predicted SQL (mine): SELECT COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN games g ON s.game_id = g.game_id WHERE s.player_id = (SELECT player_id FROM players WHERE name ILIKE '%Kornet%') AND g.season_type = 'Playoff'
+DB execution:        ❌ FAILED  — more than one row returned by a subquery used as an expression
+
+==================================================
+
+==================================================
+Question 173: How many playoff games has Oshae Brissett played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Oshae Brissett%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(4,)]
+==================================================
+
+==================================================
+Question 174: How many times has Brissett suited up in the postseason?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+Predicted SQL (mine): SELECT COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name ILIKE '%Brissett%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(4,)]
+==================================================
+
+==================================================
+Question 175: What is the number of playoff games Mykhailiuk has played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id JOIN players p ON sc.player_id = p.player_id WHERE p.name = 'Mykhailiuk' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(0,)]
+==================================================
+
+==================================================
+Question 176: How many games has Mykhailiuk appeared in this postseason?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Mykhailiuk%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(5,)]
+==================================================
+
+==================================================
+Question 177: In how many postseason games has Queta taken the floor?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+Predicted SQL (mine): SELECT COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name ILIKE '%Queta%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(3,)]
+==================================================
+
+==================================================
+Question 178: How many playoff games has Queta appeared in?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Queta%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(3,)]
+==================================================
+
+==================================================
+Question 179: How many times has Springer suited up in the postseason?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+Predicted SQL (mine): SELECT COUNT(DISTINCT s.game_id) FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE p.name LIKE '%Springer%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(3,)]
+==================================================
+
+==================================================
+Question 180: How many postseason contests has Jaden Springer featured in?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Jaden Springer%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(3,)]
+==================================================
+
+==================================================
+Question 181: How many games has Tillman appeared in this postseason?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Tillman%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(6,)]
+==================================================
+
+==================================================
+Question 182: What's the total number of playoff games Xavier Tillman has played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id JOIN players p ON sc.player_id = p.player_id WHERE p.name = 'Xavier Tillman' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(6,)]
+==================================================
+
+==================================================
+Question 183: How many playoff games has Walsh appeared in?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name LIKE '%Walsh%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(2,)]
+==================================================
+
+==================================================
+Question 184: In how many playoff games has Jordan Walsh played?
+Gold SQL (Craig's):  SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+Predicted SQL (mine): SELECT COUNT(DISTINCT sc.game_id) FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE p.name ILIKE '%Jordan Walsh%' AND g.season_type = 'Playoff'
+DB execution:        ✅ SUCCESS — [(2,)]
+==================================================
+
+==================================================
+Question 185: Who dropped 20-plus in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 20
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, sc.game_id HAVING SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) >= 20 ORDER BY points DESC
+DB execution:        ✅ SUCCESS — [('Derrick White', '0042300104', 38), ('Jaylen Brown', '0042300302', 32)]
+==================================================
+
+==================================================
+Question 186: Who hit the 20-point mark or higher in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 20
+Predicted SQL (mine): SELECT DISTINCT p.name FROM shot_charts s JOIN players p ON s.player_id = p.player_id JOIN games g ON s.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, s.game_id HAVING SUM(CASE WHEN s.made_flag = 1 AND s.shot_type = '3PT Field Goal' THEN 3 WHEN s.made_flag = 1 AND s.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) >= 20
+DB execution:        ✅ SUCCESS — [('Jaylen Brown',), ('Jayson Tatum',)]
+==================================================
+
+==================================================
+Question 187: Who handed out 5-plus assists in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 5
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) AS assists
+FROM play_
+DB execution:        ❌ FAILED  — relation "play_" does not exist
+LINE 2: FROM play_
+             ^
+
+==================================================
+
+==================================================
+Question 188: Who racked up 5 assists or more in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 5
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) AS assists FROM play_by_play pbp JOIN games g ON pbp.game_id = g.game_id JOIN players p ON pbp.player_ids = CAST(p.player_id AS TEXT) WHERE pbp.event_type ILIKE '%assist%' AND g.season_type = 'Playoff' GROUP BY p.name, pbp.game_id HAVING COUNT(*) >= 5 ORDER BY assists DESC
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 189: Who hauled in 5-plus boards in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 5
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) AS rebounds FROM play_by_play pbp JOIN games g ON pbp.game_id = g.game_id JOIN players p ON pbp.player_ids = CAST(p.player_id AS TE
+DB execution:        ❌ FAILED  — syntax error at end of input
+LINE 1: ...id JOIN players p ON pbp.player_ids = CAST(p.player_id AS TE
+                                                                       ^
+
+==================================================
+
+==================================================
+Question 190: Who collected 5 rebounds or more in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 5
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) AS rebounds FROM play_by_play pbp JOIN games g ON pbp.game_id = g.game_id JOIN players p ON p.player_id = CAST(pbp.player_ids AS INTEGER) WHERE pbp.event_type = 'rebound' AND g.season_type = 'Playoff' GROUP BY p.name, pbp.game_id HAVING COUNT(*) >= 5 ORDER BY rebounds DESC
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 191: Who notched 10 or more points in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 10
+Predicted SQL (mine): SELECT p.name, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN games g ON sc.game_id=g.game_id JOIN players p ON sc.player_id=p.player_id WHERE g.season_type='Playoff' GROUP BY sc.player_id, sc.game_id, p.name HAVING SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 THEN 2 ELSE 0 END) >= 10
+DB execution:        ✅ SUCCESS — [('Jaylen Brown', 30), ('Jaylen Brown', 15)]
+==================================================
+
+==================================================
+Question 192: Who put up 10 or more points in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 10
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, sc.game_id HAVING SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) >= 10
+DB execution:        ✅ SUCCESS — [('Payton Pritchard', '0042300202', 13), ('Jaylen Brown', '0042300403', 26)]
+==================================================
+
+==================================================
+Question 193: Who notched 10 or more assists in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 10
+Predicted SQL (mine): SELECT p.name, pbp.game
+DB execution:        ❌ FAILED  — missing FROM-clause entry for table "p"
+LINE 1: SELECT p.name, pbp.game
+               ^
+
+==================================================
+
+==================================================
+Question 194: Who dished out 10 or more assists in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 10
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT
+DB execution:        ❌ FAILED  — missing FROM-clause entry for table "p"
+LINE 1: SELECT p.name, pbp.game_id, COUNT
+               ^
+
+==================================================
+
+==================================================
+Question 195: Who notched 10 or more rebounds in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 10
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) AS rebounds FROM play_by_play pbp JOIN games g ON pbp.game_id = g.game_id JOIN players p ON p.player_id = CAST(pbp.player_ids AS INTEGER) WHERE g.season_type = 'Playoff' AND pbp.event_type = 'rebound' GROUP BY p
+DB execution:        ❌ FAILED  — column "p.name" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 1: SELECT p.name, pbp.game_id, COUNT(*) AS rebounds FROM play_b...
+               ^
+
+==================================================
+
+==================================================
+Question 196: Who pulled down 10 or more rebounds in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 10
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) as rebounds FROM play_by_play pbp JOIN games g ON pbp.game_id = g.game_id JOIN players p ON p.player_id = pbp.player_ids::INTEGER WHERE pbp.event_type ILIKE '%rebound%' AND g.season_type = 'Playoff' GROUP BY p.name, pbp.game_id HAVING COUNT(*) >= 10 ORDER BY rebounds DESC
+DB execution:        ✅ SUCCESS — [('Bam Adebayo', '0042300104', 17), ('Al Horford', '0042300205', 15)]
+==================================================
+
+==================================================
+Question 197: Who dropped 13-plus in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 13
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, sc.game_id HAVING SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) >= 13 ORDER BY points DESC
+DB execution:        ✅ SUCCESS — [('Derrick White', '0042300104', 38), ('Jaylen Brown', '0042300302', 32)]
+==================================================
+
+==================================================
+Question 198: Who hit the 13-point mark or higher in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 13
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, sc.game_id HAVING SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) >= 13 ORDER BY points DESC
+DB execution:        ✅ SUCCESS — [('Derrick White', '0042300104', 38), ('Jaylen Brown', '0042300302', 32)]
+==================================================
+
+==================================================
+Question 199: Who handed out 9-plus assists in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 9
+Predicted SQL (mine): 
+DB execution:        ❌ FAILED  — empty prediction
+==================================================
+
+==================================================
+Question 200: Who racked up 9 assists or more in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 9
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) AS assists FROM play_by_play pbp JOIN games g ON pbp.game_id = g.game_id JOIN players p ON p.player_id = CAST(pbp.player_ids AS INTEGER) WHERE g.season_type = 'Playoff' AND
+DB execution:        ❌ FAILED  — syntax error at end of input
+LINE 1: ...p.player_ids AS INTEGER) WHERE g.season_type = 'Playoff' AND
+                                                                       ^
+
+==================================================
+
+==================================================
+Question 201: Who hauled in 12-plus boards in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 12
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) AS rebounds FROM play_by_play pbp JOIN games g ON pbp.game_id = g.game_id JOIN players p ON pbp.player_ids = CAST(p.player_id AS TEXT) WHERE pbp.event_type ILIKE '%rebound%' AND g.season_type = 'Playoff' GROUP BY p.name, pbp.game_id HAVING COUNT(*) >= 12 ORDER BY rebounds DESC
+DB execution:        ✅ SUCCESS — [('Bam Adebayo', '0042300104', 17), ('Al Horford', '0042300205', 15)]
+==================================================
+
+==================================================
+Question 202: Who collected 12 rebounds or more in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 12
+Predicted SQL (mine): SELECT pl.name, pbp.game_id, COUNT(*) as rebounds FROM play_by_play pbp JOIN games g ON pbp.game_id = g.game_id JOIN players pl ON pl.player_id = CAST(pbp.player_ids AS INTEGER) WHERE pbp.event_type = 'rebound' AND g.season_type = 'Playoff' GROUP BY pl.name, pbp.game_id HAVING COUNT(*) >= 12 ORDER BY rebounds DESC
+DB execution:        ✅ SUCCESS — []
+==================================================
+
+==================================================
+Question 203: Who finished with 19 points or fewer in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 19
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, sc.game_id HAVING SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 AND sc.shot_type = '2PT Field Goal' THEN 2 ELSE 0 END) <= 19
+DB execution:        ✅ SUCCESS — [('Payton Pritchard', '0042300202', 13), ('Jayson Tatum', '0042300402', 13)]
+==================================================
+
+==================================================
+Question 204: Who stayed at or under 19 points in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 19
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, sc.game_id HAVING SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) <= 19
+DB execution:        ✅ SUCCESS — [('Payton Pritchard', '0042300202', 13), ('Jayson Tatum', '0042300402', 13)]
+==================================================
+
+==================================================
+Question 205: Who finished with 16 assists or fewer in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 16
+Predicted SQL (mine): 
+DB execution:        ❌ FAILED  — empty prediction
+==================================================
+
+==================================================
+Question 206: Who stayed at or under 16 assists in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 16
+Predicted SQL (mine): 
+DB execution:        ❌ FAILED  — empty prediction
+==================================================
+
+==================================================
+Question 207: Who finished with 9 boards or fewer in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 9
+Predicted SQL (mine): SELECT p.name, COUNT(*) as rebounds F
+DB execution:        ❌ FAILED  — syntax error at or near "F"
+LINE 1: SELECT p.name, COUNT(*) as rebounds F
+                                            ^
+
+==================================================
+
+==================================================
+Question 208: Who stayed at or under 9 rebounds in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 9
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) as rebounds FROM play_by_play pbp JOIN games g ON pbp.game_id = g.game_id JOIN players p ON pbp.player_ids = CAST(p.player_id AS TEXT) WHERE pbp.event_type ILIKE '%rebound%' AND g.season_type = 'Playoff' GROUP BY p.name, pbp.game_id HAVING COUNT(*) <= 9 ORDER BY rebounds DESC
+DB execution:        ✅ SUCCESS — [('Daniel Gafford', '0042300402', 9), ('Jayson Tatum', '0042300402', 9)]
+==================================================
+
+==================================================
+Question 209: Who was kept to 5 points or fewer in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 5
+Predicted SQL (mine): SELECT p.name, g.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, g.game_id HAVING SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) <= 5 ORDER BY points ASC
+DB execution:        ✅ SUCCESS — [('Svi Mykhailiuk', '0042300202', 0), ('Sam Hauser', '0042300303', 0)]
+==================================================
+
+==================================================
+Question 210: Who put up 5 or fewer points in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 5
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, sc.game_id HAVING SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) <= 5
+DB execution:        ✅ SUCCESS — [('Svi Mykhailiuk', '0042300302', 3), ('Sam Hauser', '0042300302', 2)]
+==================================================
+
+==================================================
+Question 211: Who was kept to 13 assists or fewer in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 13
+Predicted SQL (mine): SELECT pbp.player_ids, pbp.game_id, COUNT(*) AS assists
+FROM play_by_play pbp
+JOIN games g ON pbp.game_id = g.game_id
+WHERE g.season_type = 'Playoff'
+  AND pbp
+DB execution:        ❌ FAILED  — argument of AND must be type boolean, not type play_by_play
+LINE 5:   AND pbp
+              ^
+
+==================================================
+
+==================================================
+Question 212: Who dished out 13 or fewer assists in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 13
+Predicted SQL (mine): 
+DB execution:        ❌ FAILED  — empty prediction
+==================================================
+
+==================================================
+Question 213: Who was kept to 16 rebounds or fewer in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 16
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) AS rebounds
+FROM play_by_play pbp
+JOIN games g ON pbp.game_id = g
+DB execution:        ❌ FAILED  — operator does not exist: text = games
+LINE 3: JOIN games g ON pbp.game_id = g
+                                    ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+
+==================================================
+
+==================================================
+Question 214: Who pulled down 16 or fewer rebounds in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 16
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) AS rebounds
+FROM play_by_play pbp
+JOIN games g ON pbp.game_id = g.game_id
+JOIN players p ON p.player_id = CAST(pbp.player_ids AS INTEGER
+DB execution:        ❌ FAILED  — syntax error at end of input
+LINE 4: ...IN players p ON p.player_id = CAST(pbp.player_ids AS INTEGER
+                                                                       ^
+
+==================================================
+
+==================================================
+Question 215: Who finished with 14 points or fewer in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 14
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) AS points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, sc.game_id HAVING SUM(CASE WHEN sc.made_flag = 1 AND sc.shot_type = '3PT Field Goal' THEN 3 WHEN sc.made_flag = 1 THEN 2 ELSE 0 END) <= 14
+DB execution:        ✅ SUCCESS — [('Payton Pritchard', '0042300202', 13), ('Jayson Tatum', '0042300402', 13)]
+==================================================
+
+==================================================
+Question 216: Who stayed at or under 14 points in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 14
+Predicted SQL (mine): SELECT p.name, sc.game_id, SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) as points FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id JOIN games g ON sc.game_id = g.game_id WHERE g.season_type = 'Playoff' GROUP BY p.name, sc.game_id HAVING SUM(CASE WHEN sc.made_flag=1 AND sc.shot_type='3PT Field Goal' THEN 3 WHEN sc.made_flag=1 AND sc.shot_type='2PT Field Goal' THEN 2 ELSE 0 END) <= 14 ORDER BY points DESC
+DB execution:        ✅ SUCCESS — [('Payton Pritchard', '0042300201', 14), ('Jrue Holiday', '0042300201', 14)]
+==================================================
+
+==================================================
+Question 217: Who finished with 7 assists or fewer in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 7
+Predicted SQL (mine): 
+DB execution:        ❌ FAILED  — empty prediction
+==================================================
+
+==================================================
+Question 218: Who stayed at or under 7 assists in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 7
+Predicted SQL (mine): 
+DB execution:        ❌ FAILED  — empty prediction
+==================================================
+
+==================================================
+Question 219: Who finished with 6 boards or fewer in a single playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 6
+Predicted SQL (mine): 
+DB execution:        ❌ FAILED  — empty prediction
+==================================================
+
+==================================================
+Question 220: Who stayed at or under 6 rebounds in a playoff game?
+Gold SQL (Craig's):  SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 6
+Predicted SQL (mine): SELECT p.name, pbp.game_id, COUNT(*) AS rebounds FROM
+DB execution:        ❌ FAILED  — syntax error at end of input
+LINE 1: SELECT p.name, pbp.game_id, COUNT(*) AS rebounds FROM
+                                                             ^
+
+==================================================
+
+============================================================
+ROSALINA'S MODEL ON CRAIG'S DATA — RESULTS SUMMARY
+============================================================
+  Test pairs:         220
+  DB execution rate:  183/220 (83.2%)
+  Failed execution:   37/220
+============================================================

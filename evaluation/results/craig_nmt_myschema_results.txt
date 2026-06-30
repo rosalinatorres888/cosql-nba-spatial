@@ -1,0 +1,329 @@
+
+==================================================
+Translating sentence 1: What is the average distance on made shots versus missed shots?
+Query class:           Shot Characteristics
+Actual translation:    SELECT CASE WHEN made_flag = 1 THEN 'made' ELSE 'missed' END as result, ROUND(AVG(distance), 1) as avg_distance FROM shot_charts GROUP BY made_flag ORDER BY made_flag DESC
+Predicted translation: select round avg distance , as avg distance from shot charts
+DB execution:          ❌ FAILED — syntax error at or near "distance"
+LINE 1: select round avg distance , as avg distance from shot charts
+                         ^
+
+==================================================
+
+==================================================
+Translating sentence 2: Show all quarters ranked by shooting percentage.
+Query class:           Comparative Aggregation
+Actual translation:    SELECT period, CAST(SUM(CASE WHEN made_flag = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) as fg_pct FROM shot_charts WHERE period BETWEEN 1 AND 4 GROUP BY period ORDER BY fg_pct DESC
+Predicted translation: select case when abs x and y then paint when y and distance then above break when x and y or x and y then corner when distance between and then mid range else other end as zone , cast sum case when made flag then else end as float count as fg pct , count as attempts from shot charts group by zone order by fg pct desc
+DB execution:          ❌ FAILED — syntax error at or near "x"
+LINE 1: select case when abs x and y then paint when y and distance ...
+                             ^
+
+==================================================
+
+==================================================
+Translating sentence 3: How many shots were taken at exactly 0 feet — dunks and tip-ins?
+Query class:           Shot Characteristics
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE distance = 0
+Predicted translation: select count from shot charts where distance
+DB execution:          ❌ FAILED — relation "shot" does not exist
+LINE 1: select count from shot charts where distance
+                          ^
+
+==================================================
+
+==================================================
+Translating sentence 4: How many shots were taken with less than 5 seconds left in the period?
+Query class:           Shot Characteristics
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE (minutes_remaining * 60 + period_seconds_remaining) < 5
+Predicted translation: select count from shot charts where period and minutes remaining period seconds remaining
+DB execution:          ❌ FAILED — syntax error at or near "remaining"
+LINE 1: ...t count from shot charts where period and minutes remaining ...
+                                                             ^
+
+==================================================
+
+==================================================
+Translating sentence 5: Did he shoot more 2s or 3s?
+Query class:           Player/Entity
+Actual translation:    SELECT shot_type, COUNT(*) as attempts FROM shot_charts WHERE player_id = (SELECT player_id FROM players WHERE name ILIKE '%Marcus Smart%') GROUP BY shot_type
+Predicted translation: select case when cast sum case when made flag then else end as float count . then yes else no end as made majority from shot charts where player id select player id from players where name ilike jrue holiday and abs x and y
+DB execution:          ❌ FAILED — syntax error at or near "sum"
+LINE 1: select case when cast sum case when made flag then else end ...
+                              ^
+
+==================================================
+
+==================================================
+Translating sentence 6: How many of those were missed?
+Query class:           Simple Aggregation
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE ABS(x) <= 80 AND y <= 190 AND made_flag = 0
+Predicted translation: select count from shot charts where game id and shot type pt field goal
+DB execution:          ❌ FAILED — syntax error at or near "id"
+LINE 1: select count from shot charts where game id and shot type pt...
+                                                 ^
+
+==================================================
+
+==================================================
+Translating sentence 7: Which was higher — 3-point volume or 2-point volume?
+Query class:           Comparative Aggregation
+Actual translation:    SELECT shot_type, COUNT(*) as attempts FROM shot_charts GROUP BY shot_type ORDER BY attempts DESC
+Predicted translation: select p . name , count as threes attempted , cast sum case when sc . made flag then else end as float count as pct from shot charts sc join players p on sc . player id p . player id where sc . shot type pt field goal group by p . name order by threes attempted desc , pct asc limit
+DB execution:          ❌ FAILED — syntax error at or near "attempted"
+LINE 1: select p . name , count as threes attempted , cast sum case ...
+                                          ^
+
+==================================================
+
+==================================================
+Translating sentence 8: Which period had the most missed shots?
+Query class:           Comparative Aggregation
+Actual translation:    SELECT period, SUM(CASE WHEN made_flag = 0 THEN 1 ELSE 0 END) as misses FROM shot_charts WHERE period BETWEEN 1 AND 4 GROUP BY period ORDER BY misses DESC LIMIT 1
+Predicted translation: select p . name , count as paint attempts from shot charts sc join players p on sc . player id p . player id where abs sc . x and sc . y group by p . name order by paint attempts desc limit
+DB execution:          ❌ FAILED — syntax error at or near "attempts"
+LINE 1: select p . name , count as paint attempts from shot charts s...
+                                         ^
+
+==================================================
+
+==================================================
+Translating sentence 9: How many did he make?
+Query class:           Multi-Turn Coreference
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE player_id = (SELECT player_id FROM players WHERE name ILIKE '%Jayson Tatum%') AND x <= -220 AND y <= 90 AND made_flag = 1
+Predicted translation: select count from shot charts where player id select player id from players where name ilike jayson tatum and made flag
+DB execution:          ❌ FAILED — syntax error at or near "id"
+LINE 1: select count from shot charts where player id select player ...
+                                                   ^
+
+==================================================
+
+==================================================
+Translating sentence 10: What was the field goal percentage in the playoffs?
+Query class:           Temporal Scope + Comparative
+Actual translation:    SELECT CAST(SUM(CASE WHEN made_flag = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) as fg_pct FROM shot_charts WHERE game_id IN (SELECT game_id FROM games WHERE season_type = 'Playoff')
+Predicted translation: select cast sum case when made flag then else end as float count as fg pct from shot charts
+DB execution:          ❌ FAILED — syntax error at or near "sum"
+LINE 1: select cast sum case when made flag then else end as float c...
+                    ^
+
+==================================================
+
+==================================================
+Translating sentence 11: How many plays involved Jayson Tatum?
+Query class:           Simple Aggregation
+Actual translation:    SELECT COUNT(*) FROM play_by_play WHERE player_ids = (SELECT CAST(player_id AS TEXT) FROM players WHERE name ILIKE '%Jayson Tatum%')
+Predicted translation: select count from shot charts where player id select player id from players where name ilike jayson tatum
+DB execution:          ❌ FAILED — syntax error at or near "id"
+LINE 1: select count from shot charts where player id select player ...
+                                                   ^
+
+==================================================
+
+==================================================
+Translating sentence 12: What about missed ones only?
+Query class:           Spatial Zone
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE x >= 220 AND y <= 90 AND made_flag = 0
+Predicted translation: select count from shot charts where player id select player id from players where name ilike jayson tatum and x and y and made flag
+DB execution:          ❌ FAILED — syntax error at or near "id"
+LINE 1: select count from shot charts where player id select player ...
+                                                   ^
+
+==================================================
+
+==================================================
+Translating sentence 13: Only players with at least 200 attempts.
+Query class:           Comparative Aggregation
+Actual translation:    SELECT p.name, CAST(SUM(CASE WHEN sc.made_flag = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) as fg_pct FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id GROUP BY p.name HAVING CAST(SUM(CASE WHEN sc.made_flag = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) > 0.50 AND COUNT(*) >= 200 ORDER BY fg_pct DESC
+Predicted translation: select p . name , cast sum case when sc . made flag then else end as float count as fg pct from shot charts sc join players p on sc . player id p . player id group by p . name having count order by fg pct desc limit
+DB execution:          ❌ FAILED — syntax error at or near "sum"
+LINE 1: select p . name , cast sum case when sc . made flag then els...
+                               ^
+
+==================================================
+
+==================================================
+Translating sentence 14: How many were 3-pointers?
+Query class:           Simple Aggregation
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE period = 1 AND shot_type = '3PT Field Goal'
+Predicted translation: select count from shot charts where y and distance
+DB execution:          ❌ FAILED — relation "shot" does not exist
+LINE 1: select count from shot charts where y and distance
+                          ^
+
+==================================================
+
+==================================================
+Translating sentence 15: Which period had the most attempts in those final 30 seconds?
+Query class:           Temporal Scope
+Actual translation:    SELECT period, COUNT(*) as attempts FROM shot_charts WHERE (minutes_remaining * 60 + period_seconds_remaining) <= 30 GROUP BY period ORDER BY attempts DESC LIMIT 1
+Predicted translation: select g . game id , g . date , count as attempts from shot charts sc join games g on sc . game id g . game id where g . season type regular group by g . game id , g . date order by attempts desc limit
+DB execution:          ❌ FAILED — syntax error at or near "sc"
+LINE 1: ...d , g . date , count as attempts from shot charts sc join ga...
+                                                             ^
+
+==================================================
+
+==================================================
+Translating sentence 16: Compare first half vs second half attempts.
+Query class:           Temporal Scope + Comparative
+Actual translation:    SELECT CASE WHEN period IN (1,2) THEN 'first_half' ELSE 'second_half' END as half, COUNT(*) as attempts FROM shot_charts WHERE period BETWEEN 1 AND 4 GROUP BY half
+Predicted translation: select p . name , count as attempts from shot charts sc join players p on sc . player id p . player id where p . name ilike jaylen brown or p . name ilike jayson tatum group by p . name
+DB execution:          ❌ FAILED — syntax error at or near "sc"
+LINE 1: ...ect p . name , count as attempts from shot charts sc join pl...
+                                                             ^
+
+==================================================
+
+==================================================
+Translating sentence 17: What was the shooting percentage in the paint compared to above the break?
+Query class:           Spatial Zone + Comparative
+Actual translation:    SELECT CAST(SUM(CASE WHEN ABS(x) <= 80 AND y <= 190 AND made_flag = 1 THEN 1 ELSE 0 END) AS FLOAT) / NULLIF(SUM(CASE WHEN ABS(x) <= 80 AND y <= 190 THEN 1 ELSE 0 END), 0) as paint_pct, CAST(SUM(CASE WHEN y > 90 AND distance > 22 AND made_flag = 1 THEN 1 ELSE 0 END) AS FLOAT) / NULLIF(SUM(CASE WHEN y > 90 AND distance > 22 THEN 1 ELSE 0 END), 0) as above_break_pct FROM shot_charts
+Predicted translation: select cast sum case when made flag then else end as float count as fg pct from shot charts where player id select player id from players where name ilike porzi and abs x and y
+DB execution:          ❌ FAILED — syntax error at or near "sum"
+LINE 1: select cast sum case when made flag then else end as float c...
+                    ^
+
+==================================================
+
+==================================================
+Translating sentence 18: Which players had the most attempts there?
+Query class:           Spatial Zone + Player
+Actual translation:    SELECT p.name, COUNT(*) as attempts FROM shot_charts sc JOIN players p ON sc.player_id = p.player_id WHERE distance <= 4 OR (ABS(x) <= 80 AND y <= 190) GROUP BY p.name ORDER BY attempts DESC
+Predicted translation: select g . game id , g . date , count as attempts from shot charts sc join games g on sc . game id g . game id where g . season type regular group by g . game id , g . date order by attempts desc limit
+DB execution:          ❌ FAILED — syntax error at or near "sc"
+LINE 1: ...d , g . date , count as attempts from shot charts sc join ga...
+                                                             ^
+
+==================================================
+
+==================================================
+Translating sentence 19: Show me all mid-range shot attempts.
+Query class:           Spatial Zone
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE distance BETWEEN 8 AND 22
+Predicted translation: select p . name , count as attempts from shot charts sc join players p on sc . player id p . player id group by p . name order by attempts desc limit
+DB execution:          ❌ FAILED — syntax error at or near "sc"
+LINE 1: ...ect p . name , count as attempts from shot charts sc join pl...
+                                                             ^
+
+==================================================
+
+==================================================
+Translating sentence 20: How many shots came from the game on October 30th?
+Query class:           Game/Matchup Context
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE game_id IN (SELECT game_id FROM games WHERE DATE(date) = '2023-10-30')
+Predicted translation: select count from shot charts where game id in select game id from games where date date
+DB execution:          ❌ FAILED — syntax error at or near "id"
+LINE 1: select count from shot charts where game id in select game i...
+                                                 ^
+
+==================================================
+
+==================================================
+Translating sentence 21: How many shots in overtime?
+Query class:           Temporal Scope
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE period >= 5
+Predicted translation: select count from shot charts where game id in select game id from games where date date
+DB execution:          ❌ FAILED — syntax error at or near "id"
+LINE 1: select count from shot charts where game id in select game i...
+                                                 ^
+
+==================================================
+
+==================================================
+Translating sentence 22: How many shots in the first half?
+Query class:           Temporal Scope
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE period IN (1, 2)
+Predicted translation: select count from shot charts where game id in select game id from games where date date between and
+DB execution:          ❌ FAILED — syntax error at or near "id"
+LINE 1: select count from shot charts where game id in select game i...
+                                                 ^
+
+==================================================
+
+==================================================
+Translating sentence 23: Were there more shots in Q1 or Q4?
+Query class:           Temporal Scope + Comparative
+Actual translation:    SELECT period, COUNT(*) as attempts FROM shot_charts WHERE period IN (1, 4) GROUP BY period ORDER BY period
+Predicted translation: select case when made flag then made else missed end as result , count as count from shot charts group by made flag order by count desc
+DB execution:          ❌ FAILED — syntax error at or near "flag"
+LINE 1: select case when made flag then made else missed end as resu...
+                              ^
+
+==================================================
+
+==================================================
+Translating sentence 24: How many players appear in the shot data?
+Query class:           Simple Aggregation
+Actual translation:    SELECT COUNT(DISTINCT player_id) FROM shot_charts
+Predicted translation: select count from shot charts where period
+DB execution:          ❌ FAILED — relation "shot" does not exist
+LINE 1: select count from shot charts where period
+                          ^
+
+==================================================
+
+==================================================
+Translating sentence 25: How many distinct event types are there?
+Query class:           Simple Aggregation
+Actual translation:    SELECT COUNT(DISTINCT event_type) FROM play_by_play
+Predicted translation: select count from shot charts where game id in select game id from games where date date between and
+DB execution:          ❌ FAILED — syntax error at or near "id"
+LINE 1: select count from shot charts where game id in select game i...
+                                                 ^
+
+==================================================
+
+==================================================
+Translating sentence 26: How many shots came from beyond 25 feet?
+Query class:           Simple Aggregation
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE distance > 25
+Predicted translation: select count from shot charts where distance
+DB execution:          ❌ FAILED — relation "shot" does not exist
+LINE 1: select count from shot charts where distance
+                          ^
+
+==================================================
+
+==================================================
+Translating sentence 27: How many shot attempts came from inside the restricted area?
+Query class:           Spatial Zone
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE distance <= 4 OR (ABS(x) <= 80 AND y <= 190)
+Predicted translation: select count from shot charts where abs x and y
+DB execution:          ❌ FAILED — syntax error at or near "x"
+LINE 1: select count from shot charts where abs x and y
+                                                ^
+
+==================================================
+
+==================================================
+Translating sentence 28: How many shots in the last 30 seconds of any period?
+Query class:           Temporal Scope
+Actual translation:    SELECT COUNT(*) FROM shot_charts WHERE (minutes_remaining * 60 + period_seconds_remaining) <= 30
+Predicted translation: select count from shot charts where game id in select game id from games where date date between and
+DB execution:          ❌ FAILED — syntax error at or near "id"
+LINE 1: select count from shot charts where game id in select game i...
+                                                 ^
+
+==================================================
+
+============================================================
+CRAIG NMT (Rosalina's Schema) — RESULTS SUMMARY
+============================================================
+  Training data:      Rosalina's 138 approved NL/SQL pairs
+  Schema:             nba_spatial (shot_charts, players, games, play_by_play)
+  Test pairs:         28
+  SQL generated:      28/28 (100%)
+  DB execution rate:  0/28 (0.0%)
+  Failed execution:   28/28
+
+  ROOT CAUSE: Craig's preprocess_sentence() strips all SQL syntax.
+  Underscores → spaces, quotes removed, numbers removed,
+  operators removed. Output can never be valid SQL.
+  This is an architectural limitation, not a data problem.
+
+  COMPARISON:
+  Rosalina's model (few-shot LLM):  96.4% execution accuracy
+  Craig's NMT (his schema):          0.0% execution accuracy
+  Craig's NMT (Rosalina's schema):   0.0% execution accuracy
+============================================================
