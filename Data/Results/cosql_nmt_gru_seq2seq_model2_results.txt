@@ -1,0 +1,880 @@
+Translating sentence 1: Who put up the biggest point total in one playoff game?
+expected output: SELECT PLAYER_NAME FROM boxscores ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores order by pts desc limit 1;
+
+Translating sentence 2: Name the player with the most points in any one playoff game.
+expected output: SELECT PLAYER_NAME FROM boxscores ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'cle' order by pts desc limit 1;
+
+Translating sentence 3: Which Boston player came up shortest on the scoreboard in a playoff game?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS ASC LIMIT 1;
+Translated: select max(pts) from boxscores where player_name = ?;
+
+Translating sentence 4: Name the Boston player with the lowest point total in a playoff game.
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS ASC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'bos' order by pts asc limit 1;
+
+Translating sentence 5: Across the postseason, what's the average points in a game?
+expected output: SELECT AVG(PTS) FROM boxscores
+Translated: select avg(pts) from boxscores
+
+Translating sentence 6: What is the overall average for points scored per playoff game?
+expected output: SELECT AVG(PTS) FROM boxscores
+Translated: select avg(pts) from boxscores
+
+Translating sentence 7: What's the per-game scoring average for a chosen player in the playoffs?
+expected output: SELECT AVG(points) FROM player_stats WHERE player_name = ?;
+Translated: select avg(pts) from boxscores where player_name = ?;
+
+Translating sentence 8: What's a particular player's average scoring output this postseason?
+expected output: SELECT AVG(points) FROM player_stats WHERE player_name = ?;
+Translated: select avg(pts) from boxscores where player_name = ?;
+
+Translating sentence 9: How many times have the Celtics come away with a win this postseason?
+expected output: SELECT COUNT(*) FROM games WHERE winner = 'Boston Celtics';
+Translated: select count(*) from games where loser = 'boston celtics';
+
+Translating sentence 10: What's the Celtics' total number of postseason wins?
+expected output: SELECT COUNT(*) FROM games WHERE winner = 'Boston Celtics';
+Translated: select count(*) from player_boxscores where player_name = 'payton pritchard';
+
+Translating sentence 11: Who took the win in that playoff game?
+expected output: SELECT winner FROM games WHERE game_id = num
+Translated: select winner from games where game_id = num
+
+Translating sentence 12: Which side won a given postseason contest?
+expected output: SELECT winner FROM games WHERE game_id = num
+Translated: select max(pts) from boxscores where player_name = ?;
+
+Translating sentence 13: How many times have the Celtics come up short this postseason?
+expected output: SELECT COUNT(*) FROM games WHERE loser = 'Boston Celtics';
+Translated: select count(*) from games where loser = 'boston celtics';
+
+Translating sentence 14: What's the Celtics' total number of postseason losses?
+expected output: SELECT COUNT(*) FROM games WHERE loser = 'Boston Celtics';
+Translated: select count(*) from player_boxscores where player_name = 'jaden springer';
+
+Translating sentence 15: Who took the loss in that playoff game?
+expected output: SELECT CASE WHEN home_score > away_score THEN away_team ELSE home_team END AS loser FROM games WHERE game_id = num;
+Translated: select player_name, game_id from player_boxscores where game_id = num;
+
+Translating sentence 16: Which side fell in a given postseason contest?
+expected output: SELECT CASE WHEN home_score > away_score THEN away_team ELSE home_team END AS loser FROM games WHERE game_id = num;
+Translated: select player_name, game_id from games where game_id = num;
+
+Translating sentence 17: Which Boston player lit it up for the most points in a playoff game?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores order by pts desc limit 1;
+
+Translating sentence 18: Name the Boston player with the highest point total in a playoff game.
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'bos' order by pts desc limit 1;
+
+Translating sentence 19: On average, how many points is Tatum putting up for Boston in the playoffs?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+Translating sentence 20: What's Tatum's per-game scoring average with the Celtics in the playoffs?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+Translating sentence 21: What's Jaylen Brown's playoff points-per-game average for the Celtics?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+Translating sentence 22: In the playoffs, what's Jaylen Brown's scoring average for Boston?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+Translating sentence 23: How many points does Horford average for Boston this postseason?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+Translating sentence 24: What is Al Horford's mean point total per playoff game with the Celtics?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+Translating sentence 25: What's White's per-game scoring average with the Celtics in the playoffs?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+Translating sentence 26: How many points a night does White put up for Boston in the postseason?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+Translating sentence 27: In the playoffs, what's Jrue Holiday's scoring average for Boston?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+Translating sentence 28: What's Holiday's playoff scoring average in a Celtics uniform?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+Translating sentence 29: What is Kristaps Porzingis's mean point total per playoff game with the Celtics?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+Translating sentence 30: On the whole, how many points does Porzingis score per playoff game for Boston?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+Translating sentence 31: How many points a night does Hauser put up for Boston in the postseason?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+Translating sentence 32: What is Sam Hauser's average points per game in the playoffs?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+Translating sentence 33: What's Pritchard's playoff scoring average in a Celtics uniform?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+Translating sentence 34: How many points per game does Payton Pritchard average for Boston in the postseason?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+Translating sentence 35: On the whole, how many points does Kornet score per playoff game for Boston?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+Translating sentence 36: What is Kornet's average scoring output per playoff game with the Celtics?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+Translating sentence 37: What is Oshae Brissett's average points per game in the playoffs?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+Translating sentence 38: On average, how many points is Brissett putting up for Boston in the playoffs?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+Translating sentence 39: How many points per game does Svi Mykhailiuk average for Boston in the postseason?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+Translating sentence 40: What's Svi Mykhailiuk's playoff points-per-game average for the Celtics?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+Translating sentence 41: What is Queta's average scoring output per playoff game with the Celtics?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+Translating sentence 42: How many points does Queta average for Boston this postseason?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+Translating sentence 43: On average, how many points is Springer putting up for Boston in the playoffs?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+Translating sentence 44: What's Springer's per-game scoring average with the Celtics in the playoffs?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+Translating sentence 45: What's Xavier Tillman's playoff points-per-game average for the Celtics?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+Translating sentence 46: In the playoffs, what's Xavier Tillman's scoring average for Boston?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+Translating sentence 47: How many points does Walsh average for Boston this postseason?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+Translating sentence 48: What is Jordan Walsh's mean point total per playoff game with the Celtics?
+expected output: SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select avg(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+Translating sentence 49: How many points did Tatum pour in during his best playoff game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+Translating sentence 50: What's the peak point total Tatum put up in a playoff game for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+Translating sentence 51: What's Jaylen Brown's playoff career high in points for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+Translating sentence 52: What's the highest Brown has scored in a postseason game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+Translating sentence 53: What's the most points Horford has dropped in a playoff game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+Translating sentence 54: What was the most points Al Horford scored in a single playoff game for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+Translating sentence 55: What's the peak point total White put up in a playoff game for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+Translating sentence 56: What was White's biggest scoring night of the playoffs for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+Translating sentence 57: What's the highest Holiday has scored in a postseason game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+Translating sentence 58: What's Holiday's single-game scoring high in the postseason with the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+Translating sentence 59: What was the most points Kristaps Porzingis scored in a single playoff game for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+Translating sentence 60: How many points were in Porzingis's top scoring playoff game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+Translating sentence 61: What was Hauser's biggest scoring night of the playoffs for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+Translating sentence 62: What is Sam Hauser's highest-scoring playoff game for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+Translating sentence 63: What's Pritchard's single-game scoring high in the postseason with the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+Translating sentence 64: What is Pritchard's best point total in a Boston playoff game?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+Translating sentence 65: How many points were in Kornet's top scoring playoff game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+Translating sentence 66: How many points did Luke Kornet score in his best playoff outing for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+Translating sentence 67: What is Oshae Brissett's highest-scoring playoff game for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+Translating sentence 68: How many points did Brissett pour in during his best playoff game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+Translating sentence 69: What is Mykhailiuk's best point total in a Boston playoff game?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+Translating sentence 70: What's Svi Mykhailiuk's playoff career high in points for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+Translating sentence 71: How many points did Neemias Queta score in his best playoff outing for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+Translating sentence 72: What's the most points Queta has dropped in a playoff game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+Translating sentence 73: How many points did Springer pour in during his best playoff game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+Translating sentence 74: What's the peak point total Springer put up in a playoff game for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+Translating sentence 75: What's Xavier Tillman's playoff career high in points for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+Translating sentence 76: What's the highest Tillman has scored in a postseason game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+Translating sentence 77: What's the most points Walsh has dropped in a playoff game for Boston?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+Translating sentence 78: What was the most points Jordan Walsh scored in a single playoff game for the Celtics?
+expected output: SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+Translating sentence 79: How few points did Tatum manage in his quietest playoff game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+Translating sentence 80: What's the lowest point total Tatum put up in a playoff game for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+Translating sentence 81: What's Jaylen Brown's lowest postseason point total for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+Translating sentence 82: What's the fewest Brown has scored in a postseason game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+Translating sentence 83: What's the fewest points Horford has scored in a playoff game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+Translating sentence 84: What was the fewest points Al Horford scored in a single playoff game for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+Translating sentence 85: What's the lowest point total White put up in a playoff game for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+Translating sentence 86: What was White's coldest scoring night of the playoffs for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+Translating sentence 87: What's the fewest Holiday has scored in a postseason game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select max(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+Translating sentence 88: What's Holiday's single-game scoring low in the postseason with the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+Translating sentence 89: What was the fewest points Kristaps Porzingis scored in a single playoff game for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+Translating sentence 90: How many points were in Porzingis's quietest scoring playoff game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+Translating sentence 91: What was Hauser's coldest scoring night of the playoffs for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+Translating sentence 92: What is Sam Hauser's lowest-scoring playoff game for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+Translating sentence 93: What's Pritchard's single-game scoring low in the postseason with the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+Translating sentence 94: What is Pritchard's smallest point total in a Boston playoff game?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+Translating sentence 95: How many points were in Kornet's quietest scoring playoff game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+Translating sentence 96: How many points did Luke Kornet score in his worst playoff outing for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+Translating sentence 97: What is Oshae Brissett's lowest-scoring playoff game for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+Translating sentence 98: How few points did Brissett manage in his quietest playoff game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+Translating sentence 99: What is Mykhailiuk's smallest point total in a Boston playoff game?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+Translating sentence 100: What's Svi Mykhailiuk's lowest postseason point total for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+Translating sentence 101: How many points did Neemias Queta score in his worst playoff outing for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+Translating sentence 102: What's the fewest points Queta has scored in a playoff game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+Translating sentence 103: How few points did Springer manage in his quietest playoff game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+Translating sentence 104: What's the lowest point total Springer put up in a playoff game for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+Translating sentence 105: What's Xavier Tillman's lowest postseason point total for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+Translating sentence 106: What's the fewest Tillman has scored in a postseason game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+Translating sentence 107: What's the fewest points Walsh has scored in a playoff game for Boston?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+Translating sentence 108: What was the fewest points Jordan Walsh scored in a single playoff game for the Celtics?
+expected output: SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+Translated: select min(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+Translating sentence 109: Which Mavericks player led the way with the top scoring game of the playoffs?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'dal' order by pts desc limit 1;
+
+Translating sentence 110: Who dropped the most points in a playoff game for Dallas?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'dal' order by pts desc limit 1;
+
+Translating sentence 111: Which Miami player lit it up for the most points in a playoff game?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores order by pts desc limit 1;
+
+Translating sentence 112: Name the Miami player with the highest point total in a playoff game.
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'mia' order by pts desc limit 1;
+
+Translating sentence 113: Which Cavaliers player led the way with the top scoring game of the playoffs?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'cle' order by pts desc limit 1;
+
+Translating sentence 114: Who dropped the most points in a playoff game for Cleveland?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'cle' order by pts desc limit 1;
+
+Translating sentence 115: Which Indiana player lit it up for the most points in a playoff game?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores order by pts desc limit 1;
+
+Translating sentence 116: Name the Indiana player with the highest point total in a playoff game.
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS DESC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'ind' order by pts desc limit 1;
+
+Translating sentence 117: Which Mavericks player had the smallest scoring output in a playoff game?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS ASC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'dal' order by pts asc limit 1;
+
+Translating sentence 118: Who scored the fewest points in a playoff game for Dallas?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS ASC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'ind' order by pts asc limit 1;
+
+Translating sentence 119: Which Miami player came up shortest on the scoreboard in a playoff game?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS ASC LIMIT 1;
+Translated: select player_name, game_id from player_boxscores where player_name = 'mia' order by pts desc limit 1;
+
+Translating sentence 120: Name the Miami player with the lowest point total in a playoff game.
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS ASC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'mia' order by pts asc limit 1;
+
+Translating sentence 121: Which Cavaliers player had the smallest scoring output in a playoff game?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS ASC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'cle' order by pts asc limit 1;
+
+Translating sentence 122: Who scored the fewest points in a playoff game for Cleveland?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS ASC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'ind' order by pts asc limit 1;
+
+Translating sentence 123: Which Indiana player came up shortest on the scoreboard in a playoff game?
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS ASC LIMIT 1;
+Translated: select player_name from boxscores order by pts desc limit 1;
+
+Translating sentence 124: Name the Indiana player with the lowest point total in a playoff game.
+expected output: SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS ASC LIMIT 1;
+Translated: select player_name from boxscores where team_abbreviation = 'ind' order by pts asc limit 1;
+
+Translating sentence 125: How many points has Tatum piled up in the postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+Translated: select sum(pts) from player_boxscores where player_name = 'jayson tatum';
+
+Translating sentence 126: What's Tatum's cumulative playoff scoring total?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+Translated: select sum(pts) from player_boxscores where player_name = 'jayson tatum';
+
+Translating sentence 127: What's Jaylen Brown's total point production in the postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+Translated: select sum(pts) from player_boxscores where player_name = 'jaylen brown';
+
+Translating sentence 128: Overall, how many points has Jaylen Brown netted in the postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+Translated: select sum(pts) from player_boxscores where player_name = 'jaylen brown';
+
+Translating sentence 129: What's Horford's combined playoff point total?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+Translated: select sum(pts) from player_boxscores where player_name = 'al horford';
+
+Translating sentence 130: What is the sum of all points Al Horford has scored in the playoffs?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+Translated: select sum(pts) from player_boxscores where player_name = 'al horford';
+
+Translating sentence 131: What's White's cumulative playoff scoring total?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+Translated: select sum(pts) from player_boxscores where player_name = 'derrick white';
+
+Translating sentence 132: How many playoff points has White accumulated in all?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+Translated: select sum(pts) from player_boxscores where player_name = 'derrick white';
+
+Translating sentence 133: Overall, how many points has Jrue Holiday netted in the postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+Translated: select sum(pts) from player_boxscores where player_name = 'jrue holiday';
+
+Translating sentence 134: Across all his playoff games, how many points has Holiday tallied?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+Translated: select sum(pts) from player_boxscores where player_name = 'jrue holiday';
+
+Translating sentence 135: What is the sum of all points Kristaps Porzingis has scored in the playoffs?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+Translated: select sum(pts) from player_boxscores where player_name = 'kristaps porzingis';
+
+Translating sentence 136: Added up, how many points has Porzingis put on the board in the playoffs?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+Translated: select sum(pts) from player_boxscores where player_name = 'kristaps porzingis';
+
+Translating sentence 137: How many playoff points has Hauser accumulated in all?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+Translated: select sum(pts) from player_boxscores where player_name = 'sam hauser';
+
+Translating sentence 138: How many total points has Sam Hauser scored in the playoffs?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+Translated: select sum(pts) from player_boxscores where player_name = 'sam hauser';
+
+Translating sentence 139: Across all his playoff games, how many points has Pritchard tallied?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+Translated: select sum(pts) from player_boxscores where player_name = 'payton pritchard';
+
+Translating sentence 140: How many points has Payton Pritchard scored overall this postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+Translated: select sum(pts) from player_boxscores where player_name = 'payton pritchard';
+
+Translating sentence 141: Added up, how many points has Kornet put on the board in the playoffs?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+Translated: select sum(pts) from player_boxscores where player_name = 'luke kornet';
+
+Translating sentence 142: What's the grand total of points Kornet has scored these playoffs?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+Translated: select sum(pts) from player_boxscores where player_name = 'luke kornet';
+
+Translating sentence 143: How many total points has Oshae Brissett scored in the playoffs?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+Translated: select sum(pts) from player_boxscores where player_name = 'oshae brissett';
+
+Translating sentence 144: How many points has Brissett piled up in the postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+Translated: select sum(pts) from player_boxscores where player_name = 'oshae brissett';
+
+Translating sentence 145: How many points has Svi Mykhailiuk scored overall this postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+Translated: select sum(pts) from player_boxscores where player_name = 'svi mykhailiuk';
+
+Translating sentence 146: What's Svi Mykhailiuk's total point production in the postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+Translated: select sum(pts) from player_boxscores where player_name = 'svi mykhailiuk';
+
+Translating sentence 147: What's the grand total of points Queta has scored these playoffs?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+Translated: select sum(pts) from player_boxscores where player_name = 'neemias queta';
+
+Translating sentence 148: What's Queta's combined playoff point total?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+Translated: select sum(pts) from player_boxscores where player_name = 'neemias queta';
+
+Translating sentence 149: How many points has Springer piled up in the postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+Translated: select sum(pts) from player_boxscores where player_name = 'jaden springer';
+
+Translating sentence 150: What's Springer's cumulative playoff scoring total?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+Translated: select sum(pts) from player_boxscores where player_name = 'jaden springer';
+
+Translating sentence 151: What's Xavier Tillman's total point production in the postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+Translated: select sum(pts) from player_boxscores where player_name = 'xavier tillman';
+
+Translating sentence 152: Overall, how many points has Xavier Tillman netted in the postseason?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+Translated: select sum(pts) from player_boxscores where player_name = 'xavier tillman';
+
+Translating sentence 153: What's Walsh's combined playoff point total?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+Translated: select sum(pts) from player_boxscores where player_name = 'jordan walsh';
+
+Translating sentence 154: What is the sum of all points Jordan Walsh has scored in the playoffs?
+expected output: SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+Translated: select sum(pts) from player_boxscores where player_name = 'jordan walsh';
+
+Translating sentence 155: How many times has Tatum suited up in the postseason?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+Translated: select count(*) from player_boxscores where player_name = 'jayson tatum';
+
+Translating sentence 156: How many postseason contests has Jayson Tatum featured in?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+Translated: select count(*) from player_boxscores where player_name = 'jayson tatum';
+
+Translating sentence 157: How many games has Brown appeared in this postseason?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+Translated: select count(*) from player_boxscores where player_name = 'jaylen brown';
+
+Translating sentence 158: What's the total number of playoff games Jaylen Brown has played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+Translated: select count(*) from player_boxscores where player_name = 'jaylen brown';
+
+Translating sentence 159: How many playoff games has Horford appeared in?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+Translated: select count(*) from player_boxscores where player_name = 'al horford';
+
+Translating sentence 160: In how many playoff games has Al Horford played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+Translated: select count(*) from player_boxscores where player_name = 'al horford';
+
+Translating sentence 161: How many postseason contests has Derrick White featured in?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+Translated: select count(*) from player_boxscores where player_name = 'derrick white';
+
+Translating sentence 162: How many playoff appearances does Derrick White have?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+Translated: select count(*) from player_boxscores where player_name = 'derrick white';
+
+Translating sentence 163: What's the total number of playoff games Jrue Holiday has played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+Translated: select count(*) from player_boxscores where player_name = 'jrue holiday';
+
+Translating sentence 164: What's Jrue Holiday's total playoff games-played count?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+Translated: select count(*) from player_boxscores where player_name = 'jrue holiday';
+
+Translating sentence 165: In how many playoff games has Kristaps Porzingis played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+Translated: select count(*) from player_boxscores where player_name = 'kristaps porzingis';
+
+Translating sentence 166: What's the count of playoff games Porzingis has played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+Translated: select count(*) from player_boxscores where player_name = 'kristaps porzingis';
+
+Translating sentence 167: How many playoff appearances does Sam Hauser have?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+Translated: select count(*) from player_boxscores where player_name = 'sam hauser';
+
+Translating sentence 168: How many playoff games has Sam Hauser played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+Translated: select count(*) from player_boxscores where player_name = 'sam hauser';
+
+Translating sentence 169: What's Payton Pritchard's total playoff games-played count?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+Translated: select count(*) from player_boxscores where player_name = 'payton pritchard';
+
+Translating sentence 170: What is the number of playoff games Pritchard has played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+Translated: select count(*) from player_boxscores where player_name = 'payton pritchard';
+
+Translating sentence 171: What's the count of playoff games Kornet has played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+Translated: select count(*) from player_boxscores where player_name = 'luke kornet';
+
+Translating sentence 172: In how many postseason games has Kornet taken the floor?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+Translated: select count(*) from player_boxscores where player_name = 'luke kornet';
+
+Translating sentence 173: How many playoff games has Oshae Brissett played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+Translated: select count(*) from player_boxscores where player_name = 'oshae brissett';
+
+Translating sentence 174: How many times has Brissett suited up in the postseason?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+Translated: select count(*) from player_boxscores where player_name = 'oshae brissett';
+
+Translating sentence 175: What is the number of playoff games Mykhailiuk has played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+Translated: select count(*) from player_boxscores where player_name = 'svi mykhailiuk';
+
+Translating sentence 176: How many games has Mykhailiuk appeared in this postseason?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+Translated: select count(*) from player_boxscores where player_name = 'svi mykhailiuk';
+
+Translating sentence 177: In how many postseason games has Queta taken the floor?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+Translated: select count(*) from player_boxscores where player_name = 'neemias queta';
+
+Translating sentence 178: How many playoff games has Queta appeared in?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+Translated: select count(*) from player_boxscores where player_name = 'neemias queta';
+
+Translating sentence 179: How many times has Springer suited up in the postseason?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+Translated: select count(*) from player_boxscores where player_name = 'jaden springer';
+
+Translating sentence 180: How many postseason contests has Jaden Springer featured in?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+Translated: select count(*) from player_boxscores where player_name = 'jaden springer';
+
+Translating sentence 181: How many games has Tillman appeared in this postseason?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+Translated: select count(*) from player_boxscores where player_name = 'xavier tillman';
+
+Translating sentence 182: What's the total number of playoff games Xavier Tillman has played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+Translated: select count(*) from player_boxscores where player_name = 'xavier tillman';
+
+Translating sentence 183: How many playoff games has Walsh appeared in?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+Translated: select count(*) from player_boxscores where player_name = 'jordan walsh';
+
+Translating sentence 184: In how many playoff games has Jordan Walsh played?
+expected output: SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+Translated: select count(*) from player_boxscores where player_name = 'jordan walsh';
+
+Translating sentence 185: Who dropped 20-plus in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 20
+Translated: select player_name from boxscores order by pts desc limit 1;
+
+Translating sentence 186: Who hit the 20-point mark or higher in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 20
+Translated: select player_name, game_id from player_boxscores where pts >= 20
+
+Translating sentence 187: Who handed out 5-plus assists in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 5
+Translated: select player_name, game_id from player_boxscores where ast >= 5
+
+Translating sentence 188: Who racked up 5 assists or more in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 5
+Translated: select player_name, game_id from player_boxscores where ast >= 5
+
+Translating sentence 189: Who hauled in 5-plus boards in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 5
+Translated: select player_name, game_id from player_boxscores where game_id = num;
+
+Translating sentence 190: Who collected 5 rebounds or more in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 5
+Translated: select player_name, game_id from player_boxscores where reb >= 5
+
+Translating sentence 191: Who notched 10 or more points in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 10
+Translated: select player_name, game_id from player_boxscores where pts >= 10
+
+Translating sentence 192: Who put up 10 or more points in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 10
+Translated: select player_name, game_id from player_boxscores where pts >= 10
+
+Translating sentence 193: Who notched 10 or more assists in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 10
+Translated: select player_name, game_id from player_boxscores where ast >= 10
+
+Translating sentence 194: Who dished out 10 or more assists in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 10
+Translated: select player_name, game_id from player_boxscores where ast >= 10
+
+Translating sentence 195: Who notched 10 or more rebounds in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 10
+Translated: select player_name, game_id from player_boxscores where reb >= 10
+
+Translating sentence 196: Who pulled down 10 or more rebounds in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 10
+Translated: select player_name, game_id from player_boxscores where reb >= 10
+
+Translating sentence 197: Who dropped 13-plus in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 13
+Translated: select player_name from boxscores order by pts desc limit 1;
+
+Translating sentence 198: Who hit the 13-point mark or higher in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 13
+Translated: select player_name, game_id from player_boxscores where pts >= 13
+
+Translating sentence 199: Who handed out 9-plus assists in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 9
+Translated: select player_name, game_id from player_boxscores where ast >= 9
+
+Translating sentence 200: Who racked up 9 assists or more in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 9
+Translated: select player_name, game_id from player_boxscores where ast >= 9
+
+Translating sentence 201: Who hauled in 12-plus boards in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 12
+Translated: select player_name, game_id from player_boxscores where reb >= 12
+
+Translating sentence 202: Who collected 12 rebounds or more in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 12
+Translated: select player_name, game_id from player_boxscores where reb >= 12
+
+Translating sentence 203: Who finished with 19 points or fewer in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 19
+Translated: select player_name from boxscores where team_abbreviation = 'dal' order by pts asc limit 1;
+
+Translating sentence 204: Who stayed at or under 19 points in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 19
+Translated: select player_name, game_id from player_boxscores where pts <= 19
+
+Translating sentence 205: Who finished with 16 assists or fewer in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 16
+Translated: select player_name, game_id from player_boxscores where ast <= 16
+
+Translating sentence 206: Who stayed at or under 16 assists in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 16
+Translated: select player_name, game_id from player_boxscores where ast <= 16
+
+Translating sentence 207: Who finished with 9 boards or fewer in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 9
+Translated: select player_name, game_id from player_boxscores where pts <= 6
+
+Translating sentence 208: Who stayed at or under 9 rebounds in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 9
+Translated: select player_name, game_id from player_boxscores where reb <= 9
+
+Translating sentence 209: Who was kept to 5 points or fewer in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 5
+Translated: select player_name, game_id from player_boxscores where pts <= 5
+
+Translating sentence 210: Who put up 5 or fewer points in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 5
+Translated: select player_name, game_id from player_boxscores where pts <= 14
+
+Translating sentence 211: Who was kept to 13 assists or fewer in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 13
+Translated: select player_name, game_id from player_boxscores where ast <= ast <= ast <= ast <= ast <= ast <= ast <= ast
+
+Translating sentence 212: Who dished out 13 or fewer assists in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 13
+Translated: select player_name, game_id from player_boxscores where ast <= 7
+
+Translating sentence 213: Who was kept to 16 rebounds or fewer in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 16
+Translated: select player_name, game_id from player_boxscores where reb <= 16
+
+Translating sentence 214: Who pulled down 16 or fewer rebounds in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 16
+Translated: select player_name, game_id from player_boxscores where reb <= 16
+
+Translating sentence 215: Who finished with 14 points or fewer in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 14
+Translated: select player_name from boxscores where team_abbreviation = 'cle' order by pts asc limit 1;
+
+Translating sentence 216: Who stayed at or under 14 points in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 14
+Translated: select player_name, game_id from player_boxscores where pts <= 14
+
+Translating sentence 217: Who finished with 7 assists or fewer in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 7
+Translated: select player_name, game_id from player_boxscores where ast <= 7
+
+Translating sentence 218: Who stayed at or under 7 assists in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 7
+Translated: select player_name, game_id from player_boxscores where ast <= 7
+
+Translating sentence 219: Who finished with 6 boards or fewer in a single playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 6
+Translated: select player_name from boxscores where team_abbreviation = 'dal' order by pts desc limit 1;
+
+Translating sentence 220: Who stayed at or under 6 rebounds in a playoff game?
+expected output: SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 6
+Translated: select player_name, game_id from player_boxscores where reb <= 6
+
