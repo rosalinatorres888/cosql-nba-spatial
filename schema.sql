@@ -94,3 +94,67 @@ INSERT INTO spatial_zones (zone_name, description, sql_filter) VALUES
     ('in_the_paint',    'In the paint (full lane)',        'ABS(x) <= 80 AND y <= 190'),
     ('mid_range',       'Mid-range (non-3PT)',             'distance BETWEEN 8 AND 22')
 ON CONFLICT (zone_name) DO NOTHING;
+
+-- ============================================================
+-- BOXSCORES (Craig Hobel / Sean Costello model schema)
+-- Source: nba_api BoxScoreTraditionalV2 — 2023-24 Boston Celtics
+-- Added by: Rosalina Torres via collect_boxscores.py
+-- Note: TO_ uses underscore suffix because TO is a reserved SQL keyword
+-- ============================================================
+CREATE TABLE IF NOT EXISTS boxscores (
+    id                  SERIAL PRIMARY KEY,
+    game_id             TEXT,
+    game_date           DATE,
+    season              TEXT DEFAULT '2023-24',
+    season_type         TEXT,               -- 'Regular' or 'Playoff'
+    team_id             BIGINT,
+    TEAM_ABBREVIATION   TEXT,               -- e.g. 'BOS', 'MIA'
+    PLAYER_ID           BIGINT,
+    PLAYER_NAME         TEXT,
+    PTS                 INTEGER,
+    REB                 INTEGER,
+    AST                 INTEGER,
+    STL                 INTEGER,
+    BLK                 INTEGER,
+    TO_                 INTEGER,            -- turnovers (TO is reserved in SQL)
+    FGM                 INTEGER,
+    FGA                 INTEGER,
+    FG3M                INTEGER,
+    FG3A                INTEGER,
+    FTM                 INTEGER,
+    FTA                 INTEGER,
+    MIN                 TEXT                -- minutes played e.g. '32:14'
+);
+
+CREATE INDEX IF NOT EXISTS idx_boxscores_player ON boxscores(PLAYER_ID);
+CREATE INDEX IF NOT EXISTS idx_boxscores_game   ON boxscores(game_id);
+CREATE INDEX IF NOT EXISTS idx_boxscores_team   ON boxscores(TEAM_ABBREVIATION);
+
+-- ============================================================
+-- PLAYER_BOXSCORES (same data, no team_id — matches Craig's training schema)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS player_boxscores (
+    id                  SERIAL PRIMARY KEY,
+    game_id             TEXT,
+    game_date           DATE,
+    season              TEXT DEFAULT '2023-24',
+    season_type         TEXT,
+    PLAYER_ID           BIGINT,
+    PLAYER_NAME         TEXT,
+    TEAM_ABBREVIATION   TEXT,
+    PTS                 INTEGER,
+    REB                 INTEGER,
+    AST                 INTEGER,
+    STL                 INTEGER,
+    BLK                 INTEGER,
+    FGM                 INTEGER,
+    FGA                 INTEGER,
+    FG3M                INTEGER,
+    FG3A                INTEGER,
+    FTM                 INTEGER,
+    FTA                 INTEGER,
+    MIN                 TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_pbx_player ON player_boxscores(PLAYER_ID);
+CREATE INDEX IF NOT EXISTS idx_pbx_game   ON player_boxscores(game_id);
