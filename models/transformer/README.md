@@ -20,5 +20,5 @@ python models/transformer/sc_sql_transformer_v1.ipynb
 ```
 
 ## Sources
-https://www.tensorflow.org/text/tutorials/transformer
+https://www.tensorflow.org/text/tutorials/transformer /
 https://www.geeksforgeeks.org/nlp/multi-head-attention-mechanism/
