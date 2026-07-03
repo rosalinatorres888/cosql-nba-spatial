@@ -1,0 +1,881 @@
+✓ Q:    Who put up the biggest point total in one playoff game?
+  GT:   SELECT PLAYER_NAME FROM boxscores ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Name the player with the most points in any one playoff game.
+  GT:   SELECT PLAYER_NAME FROM boxscores ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✗ Q:    Which Boston player came up shortest on the scoreboard in a playoff game?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS ASC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'bos' order by pts desc limit 1;
+
+✓ Q:    Name the Boston player with the lowest point total in a playoff game.
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS ASC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'bos' order by pts asc limit 1;
+
+✓ Q:    Across the postseason, what's the average points in a game?
+  GT:   SELECT AVG(PTS) FROM boxscores
+  PRED: select avg(pts) from boxscores
+
+✓ Q:    What is the overall average for points scored per playoff game?
+  GT:   SELECT AVG(PTS) FROM boxscores
+  PRED: select avg(pts) from boxscores
+
+✓ Q:    What's the per-game scoring average for a chosen player in the playoffs?
+  GT:   SELECT AVG(points) FROM player_stats WHERE player_name = ?;
+  PRED: select avg(points) from player_stats where player_name = ?;
+
+✓ Q:    What's a particular player's average scoring output this postseason?
+  GT:   SELECT AVG(points) FROM player_stats WHERE player_name = ?;
+  PRED: select avg(points) from player_stats where player_name = ?;
+
+✓ Q:    How many times have the Celtics come away with a win this postseason?
+  GT:   SELECT COUNT(*) FROM games WHERE winner = 'Boston Celtics';
+  PRED: select count(*) from games where winner = 'boston celtics';
+
+✗ Q:    What's the Celtics' total number of postseason wins?
+  GT:   SELECT COUNT(*) FROM games WHERE winner = 'Boston Celtics';
+  PRED: select count(*) from player_boxscores where player_name = 'neemias queta';
+
+✓ Q:    Who took the win in that playoff game?
+  GT:   SELECT winner FROM games WHERE game_id = num
+  PRED: select winner from games where game_id = num
+
+✓ Q:    Which side won a given postseason contest?
+  GT:   SELECT winner FROM games WHERE game_id = num
+  PRED: select winner from games where game_id = num
+
+✓ Q:    How many times have the Celtics come up short this postseason?
+  GT:   SELECT COUNT(*) FROM games WHERE loser = 'Boston Celtics';
+  PRED: select count(*) from games where loser = 'boston celtics';
+
+✗ Q:    What's the Celtics' total number of postseason losses?
+  GT:   SELECT COUNT(*) FROM games WHERE loser = 'Boston Celtics';
+  PRED: select count(*) from player_boxscores where player_name = 'neemias queta';
+
+✓ Q:    Who took the loss in that playoff game?
+  GT:   SELECT CASE WHEN home_score > away_score THEN away_team ELSE home_team END AS loser FROM games WHERE game_id = num;
+  PRED: select case when home_score > away_score then away_team else home_team end as loser from games where game_id = num;
+
+✗ Q:    Which side fell in a given postseason contest?
+  GT:   SELECT CASE WHEN home_score > away_score THEN away_team ELSE home_team END AS loser FROM games WHERE game_id = num;
+  PRED: select winner from games where game_id = num
+
+✗ Q:    Which Boston player lit it up for the most points in a playoff game?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Name the Boston player with the highest point total in a playoff game.
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'BOS' ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'bos' order by pts desc limit 1;
+
+✓ Q:    On average, how many points is Tatum putting up for Boston in the playoffs?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+✓ Q:    What's Tatum's per-game scoring average with the Celtics in the playoffs?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+✓ Q:    What's Jaylen Brown's playoff points-per-game average for the Celtics?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+✓ Q:    In the playoffs, what's Jaylen Brown's scoring average for Boston?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+✓ Q:    How many points does Horford average for Boston this postseason?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+✓ Q:    What is Al Horford's mean point total per playoff game with the Celtics?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+✓ Q:    What's White's per-game scoring average with the Celtics in the playoffs?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+✓ Q:    How many points a night does White put up for Boston in the postseason?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+✓ Q:    In the playoffs, what's Jrue Holiday's scoring average for Boston?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+✓ Q:    What's Holiday's playoff scoring average in a Celtics uniform?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+✓ Q:    What is Kristaps Porzingis's mean point total per playoff game with the Celtics?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+✓ Q:    On the whole, how many points does Porzingis score per playoff game for Boston?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+✓ Q:    How many points a night does Hauser put up for Boston in the postseason?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+✓ Q:    What is Sam Hauser's average points per game in the playoffs?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+✓ Q:    What's Pritchard's playoff scoring average in a Celtics uniform?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+✓ Q:    How many points per game does Payton Pritchard average for Boston in the postseason?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+✓ Q:    On the whole, how many points does Kornet score per playoff game for Boston?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+✓ Q:    What is Kornet's average scoring output per playoff game with the Celtics?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+✓ Q:    What is Oshae Brissett's average points per game in the playoffs?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+✓ Q:    On average, how many points is Brissett putting up for Boston in the playoffs?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+✓ Q:    How many points per game does Svi Mykhailiuk average for Boston in the postseason?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+✓ Q:    What's Svi Mykhailiuk's playoff points-per-game average for the Celtics?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+✓ Q:    What is Queta's average scoring output per playoff game with the Celtics?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+✓ Q:    How many points does Queta average for Boston this postseason?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+✓ Q:    On average, how many points is Springer putting up for Boston in the playoffs?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+✓ Q:    What's Springer's per-game scoring average with the Celtics in the playoffs?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+✓ Q:    What's Xavier Tillman's playoff points-per-game average for the Celtics?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+✓ Q:    In the playoffs, what's Xavier Tillman's scoring average for Boston?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+✓ Q:    How many points does Walsh average for Boston this postseason?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+✓ Q:    What is Jordan Walsh's mean point total per playoff game with the Celtics?
+  GT:   SELECT AVG(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select avg(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+✓ Q:    How many points did Tatum pour in during his best playoff game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+✓ Q:    What's the peak point total Tatum put up in a playoff game for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+✓ Q:    What's Jaylen Brown's playoff career high in points for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+✓ Q:    What's the highest Brown has scored in a postseason game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+✓ Q:    What's the most points Horford has dropped in a playoff game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+✓ Q:    What was the most points Al Horford scored in a single playoff game for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+✓ Q:    What's the peak point total White put up in a playoff game for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+✓ Q:    What was White's biggest scoring night of the playoffs for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+✓ Q:    What's the highest Holiday has scored in a postseason game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+✓ Q:    What's Holiday's single-game scoring high in the postseason with the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+✓ Q:    What was the most points Kristaps Porzingis scored in a single playoff game for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+✓ Q:    How many points were in Porzingis's top scoring playoff game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+✓ Q:    What was Hauser's biggest scoring night of the playoffs for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+✓ Q:    What is Sam Hauser's highest-scoring playoff game for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+✓ Q:    What's Pritchard's single-game scoring high in the postseason with the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+✓ Q:    What is Pritchard's best point total in a Boston playoff game?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+✓ Q:    How many points were in Kornet's top scoring playoff game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+✓ Q:    How many points did Luke Kornet score in his best playoff outing for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+✓ Q:    What is Oshae Brissett's highest-scoring playoff game for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+✓ Q:    How many points did Brissett pour in during his best playoff game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+✓ Q:    What is Mykhailiuk's best point total in a Boston playoff game?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+✓ Q:    What's Svi Mykhailiuk's playoff career high in points for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+✓ Q:    How many points did Neemias Queta score in his best playoff outing for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+✓ Q:    What's the most points Queta has dropped in a playoff game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+✓ Q:    How many points did Springer pour in during his best playoff game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+✓ Q:    What's the peak point total Springer put up in a playoff game for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+✓ Q:    What's Xavier Tillman's playoff career high in points for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+✓ Q:    What's the highest Tillman has scored in a postseason game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+✓ Q:    What's the most points Walsh has dropped in a playoff game for Boston?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+✓ Q:    What was the most points Jordan Walsh scored in a single playoff game for the Celtics?
+  GT:   SELECT MAX(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select max(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+✓ Q:    How few points did Tatum manage in his quietest playoff game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+✓ Q:    What's the lowest point total Tatum put up in a playoff game for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jayson Tatum' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'jayson tatum' and team_abbreviation = 'bos';
+
+✓ Q:    What's Jaylen Brown's lowest postseason point total for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+✓ Q:    What's the fewest Brown has scored in a postseason game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaylen Brown' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'jaylen brown' and team_abbreviation = 'bos';
+
+✓ Q:    What's the fewest points Horford has scored in a playoff game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+✓ Q:    What was the fewest points Al Horford scored in a single playoff game for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Al Horford' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'al horford' and team_abbreviation = 'bos';
+
+✓ Q:    What's the lowest point total White put up in a playoff game for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+✓ Q:    What was White's coldest scoring night of the playoffs for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Derrick White' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'derrick white' and team_abbreviation = 'bos';
+
+✓ Q:    What's the fewest Holiday has scored in a postseason game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+✓ Q:    What's Holiday's single-game scoring low in the postseason with the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jrue Holiday' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'jrue holiday' and team_abbreviation = 'bos';
+
+✓ Q:    What was the fewest points Kristaps Porzingis scored in a single playoff game for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+✓ Q:    How many points were in Porzingis's quietest scoring playoff game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'kristaps porzingis' and team_abbreviation = 'bos';
+
+✓ Q:    What was Hauser's coldest scoring night of the playoffs for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+✓ Q:    What is Sam Hauser's lowest-scoring playoff game for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Sam Hauser' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'sam hauser' and team_abbreviation = 'bos';
+
+✓ Q:    What's Pritchard's single-game scoring low in the postseason with the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+✓ Q:    What is Pritchard's smallest point total in a Boston playoff game?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Payton Pritchard' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'payton pritchard' and team_abbreviation = 'bos';
+
+✓ Q:    How many points were in Kornet's quietest scoring playoff game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+✓ Q:    How many points did Luke Kornet score in his worst playoff outing for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Luke Kornet' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'luke kornet' and team_abbreviation = 'bos';
+
+✓ Q:    What is Oshae Brissett's lowest-scoring playoff game for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+✓ Q:    How few points did Brissett manage in his quietest playoff game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Oshae Brissett' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'oshae brissett' and team_abbreviation = 'bos';
+
+✓ Q:    What is Mykhailiuk's smallest point total in a Boston playoff game?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+✓ Q:    What's Svi Mykhailiuk's lowest postseason point total for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'svi mykhailiuk' and team_abbreviation = 'bos';
+
+✓ Q:    How many points did Neemias Queta score in his worst playoff outing for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+✓ Q:    What's the fewest points Queta has scored in a playoff game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Neemias Queta' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'neemias queta' and team_abbreviation = 'bos';
+
+✓ Q:    How few points did Springer manage in his quietest playoff game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+✓ Q:    What's the lowest point total Springer put up in a playoff game for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jaden Springer' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'jaden springer' and team_abbreviation = 'bos';
+
+✓ Q:    What's Xavier Tillman's lowest postseason point total for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+✓ Q:    What's the fewest Tillman has scored in a postseason game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Xavier Tillman' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'xavier tillman' and team_abbreviation = 'bos';
+
+✓ Q:    What's the fewest points Walsh has scored in a playoff game for Boston?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+✓ Q:    What was the fewest points Jordan Walsh scored in a single playoff game for the Celtics?
+  GT:   SELECT MIN(PTS) FROM boxscores WHERE PLAYER_NAME = 'Jordan Walsh' AND TEAM_ABBREVIATION = 'BOS';
+  PRED: select min(pts) from boxscores where player_name = 'jordan walsh' and team_abbreviation = 'bos';
+
+✓ Q:    Which Mavericks player led the way with the top scoring game of the playoffs?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'dal' order by pts desc limit 1;
+
+✓ Q:    Who dropped the most points in a playoff game for Dallas?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'dal' order by pts desc limit 1;
+
+✓ Q:    Which Miami player lit it up for the most points in a playoff game?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'mia' order by pts desc limit 1;
+
+✓ Q:    Name the Miami player with the highest point total in a playoff game.
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'mia' order by pts desc limit 1;
+
+✓ Q:    Which Cavaliers player led the way with the top scoring game of the playoffs?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'cle' order by pts desc limit 1;
+
+✓ Q:    Who dropped the most points in a playoff game for Cleveland?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'cle' order by pts desc limit 1;
+
+✗ Q:    Which Indiana player lit it up for the most points in a playoff game?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Name the Indiana player with the highest point total in a playoff game.
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS DESC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'ind' order by pts desc limit 1;
+
+✓ Q:    Which Mavericks player had the smallest scoring output in a playoff game?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS ASC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'dal' order by pts asc limit 1;
+
+✓ Q:    Who scored the fewest points in a playoff game for Dallas?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'DAL' ORDER BY PTS ASC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'dal' order by pts asc limit 1;
+
+✗ Q:    Which Miami player came up shortest on the scoreboard in a playoff game?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS ASC LIMIT 1;
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Name the Miami player with the lowest point total in a playoff game.
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'MIA' ORDER BY PTS ASC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'mia' order by pts asc limit 1;
+
+✓ Q:    Which Cavaliers player had the smallest scoring output in a playoff game?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS ASC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'cle' order by pts asc limit 1;
+
+✓ Q:    Who scored the fewest points in a playoff game for Cleveland?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'CLE' ORDER BY PTS ASC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'cle' order by pts asc limit 1;
+
+✗ Q:    Which Indiana player came up shortest on the scoreboard in a playoff game?
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS ASC LIMIT 1;
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Name the Indiana player with the lowest point total in a playoff game.
+  GT:   SELECT PLAYER_NAME FROM boxscores WHERE TEAM_ABBREVIATION = 'IND' ORDER BY PTS ASC LIMIT 1;
+  PRED: select player_name from boxscores where team_abbreviation = 'ind' order by pts asc limit 1;
+
+✓ Q:    How many points has Tatum piled up in the postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+  PRED: select sum(pts) from player_boxscores where player_name = 'jayson tatum';
+
+✓ Q:    What's Tatum's cumulative playoff scoring total?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+  PRED: select sum(pts) from player_boxscores where player_name = 'jayson tatum';
+
+✓ Q:    What's Jaylen Brown's total point production in the postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+  PRED: select sum(pts) from player_boxscores where player_name = 'jaylen brown';
+
+✓ Q:    Overall, how many points has Jaylen Brown netted in the postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+  PRED: select sum(pts) from player_boxscores where player_name = 'jaylen brown';
+
+✓ Q:    What's Horford's combined playoff point total?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+  PRED: select sum(pts) from player_boxscores where player_name = 'al horford';
+
+✓ Q:    What is the sum of all points Al Horford has scored in the playoffs?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+  PRED: select sum(pts) from player_boxscores where player_name = 'al horford';
+
+✓ Q:    What's White's cumulative playoff scoring total?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+  PRED: select sum(pts) from player_boxscores where player_name = 'derrick white';
+
+✓ Q:    How many playoff points has White accumulated in all?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+  PRED: select sum(pts) from player_boxscores where player_name = 'derrick white';
+
+✓ Q:    Overall, how many points has Jrue Holiday netted in the postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+  PRED: select sum(pts) from player_boxscores where player_name = 'jrue holiday';
+
+✓ Q:    Across all his playoff games, how many points has Holiday tallied?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+  PRED: select sum(pts) from player_boxscores where player_name = 'jrue holiday';
+
+✓ Q:    What is the sum of all points Kristaps Porzingis has scored in the playoffs?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+  PRED: select sum(pts) from player_boxscores where player_name = 'kristaps porzingis';
+
+✓ Q:    Added up, how many points has Porzingis put on the board in the playoffs?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+  PRED: select sum(pts) from player_boxscores where player_name = 'kristaps porzingis';
+
+✓ Q:    How many playoff points has Hauser accumulated in all?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+  PRED: select sum(pts) from player_boxscores where player_name = 'sam hauser';
+
+✓ Q:    How many total points has Sam Hauser scored in the playoffs?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+  PRED: select sum(pts) from player_boxscores where player_name = 'sam hauser';
+
+✓ Q:    Across all his playoff games, how many points has Pritchard tallied?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+  PRED: select sum(pts) from player_boxscores where player_name = 'payton pritchard';
+
+✓ Q:    How many points has Payton Pritchard scored overall this postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+  PRED: select sum(pts) from player_boxscores where player_name = 'payton pritchard';
+
+✓ Q:    Added up, how many points has Kornet put on the board in the playoffs?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+  PRED: select sum(pts) from player_boxscores where player_name = 'luke kornet';
+
+✓ Q:    What's the grand total of points Kornet has scored these playoffs?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+  PRED: select sum(pts) from player_boxscores where player_name = 'luke kornet';
+
+✓ Q:    How many total points has Oshae Brissett scored in the playoffs?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+  PRED: select sum(pts) from player_boxscores where player_name = 'oshae brissett';
+
+✓ Q:    How many points has Brissett piled up in the postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+  PRED: select sum(pts) from player_boxscores where player_name = 'oshae brissett';
+
+✓ Q:    How many points has Svi Mykhailiuk scored overall this postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+  PRED: select sum(pts) from player_boxscores where player_name = 'svi mykhailiuk';
+
+✓ Q:    What's Svi Mykhailiuk's total point production in the postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+  PRED: select sum(pts) from player_boxscores where player_name = 'svi mykhailiuk';
+
+✓ Q:    What's the grand total of points Queta has scored these playoffs?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+  PRED: select sum(pts) from player_boxscores where player_name = 'neemias queta';
+
+✓ Q:    What's Queta's combined playoff point total?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+  PRED: select sum(pts) from player_boxscores where player_name = 'neemias queta';
+
+✓ Q:    How many points has Springer piled up in the postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+  PRED: select sum(pts) from player_boxscores where player_name = 'jaden springer';
+
+✓ Q:    What's Springer's cumulative playoff scoring total?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+  PRED: select sum(pts) from player_boxscores where player_name = 'jaden springer';
+
+✓ Q:    What's Xavier Tillman's total point production in the postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+  PRED: select sum(pts) from player_boxscores where player_name = 'xavier tillman';
+
+✓ Q:    Overall, how many points has Xavier Tillman netted in the postseason?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+  PRED: select sum(pts) from player_boxscores where player_name = 'xavier tillman';
+
+✓ Q:    What's Walsh's combined playoff point total?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+  PRED: select sum(pts) from player_boxscores where player_name = 'jordan walsh';
+
+✓ Q:    What is the sum of all points Jordan Walsh has scored in the playoffs?
+  GT:   SELECT SUM(PTS) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+  PRED: select sum(pts) from player_boxscores where player_name = 'jordan walsh';
+
+✓ Q:    How many times has Tatum suited up in the postseason?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+  PRED: select count(*) from player_boxscores where player_name = 'jayson tatum';
+
+✓ Q:    How many postseason contests has Jayson Tatum featured in?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jayson Tatum';
+  PRED: select count(*) from player_boxscores where player_name = 'jayson tatum';
+
+✓ Q:    How many games has Brown appeared in this postseason?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+  PRED: select count(*) from player_boxscores where player_name = 'jaylen brown';
+
+✓ Q:    What's the total number of playoff games Jaylen Brown has played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaylen Brown';
+  PRED: select count(*) from player_boxscores where player_name = 'jaylen brown';
+
+✓ Q:    How many playoff games has Horford appeared in?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+  PRED: select count(*) from player_boxscores where player_name = 'al horford';
+
+✓ Q:    In how many playoff games has Al Horford played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Al Horford';
+  PRED: select count(*) from player_boxscores where player_name = 'al horford';
+
+✓ Q:    How many postseason contests has Derrick White featured in?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+  PRED: select count(*) from player_boxscores where player_name = 'derrick white';
+
+✓ Q:    How many playoff appearances does Derrick White have?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Derrick White';
+  PRED: select count(*) from player_boxscores where player_name = 'derrick white';
+
+✓ Q:    What's the total number of playoff games Jrue Holiday has played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+  PRED: select count(*) from player_boxscores where player_name = 'jrue holiday';
+
+✓ Q:    What's Jrue Holiday's total playoff games-played count?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jrue Holiday';
+  PRED: select count(*) from player_boxscores where player_name = 'jrue holiday';
+
+✓ Q:    In how many playoff games has Kristaps Porzingis played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+  PRED: select count(*) from player_boxscores where player_name = 'kristaps porzingis';
+
+✓ Q:    What's the count of playoff games Porzingis has played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Kristaps Porzingis';
+  PRED: select count(*) from player_boxscores where player_name = 'kristaps porzingis';
+
+✓ Q:    How many playoff appearances does Sam Hauser have?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+  PRED: select count(*) from player_boxscores where player_name = 'sam hauser';
+
+✓ Q:    How many playoff games has Sam Hauser played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Sam Hauser';
+  PRED: select count(*) from player_boxscores where player_name = 'sam hauser';
+
+✓ Q:    What's Payton Pritchard's total playoff games-played count?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+  PRED: select count(*) from player_boxscores where player_name = 'payton pritchard';
+
+✓ Q:    What is the number of playoff games Pritchard has played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Payton Pritchard';
+  PRED: select count(*) from player_boxscores where player_name = 'payton pritchard';
+
+✓ Q:    What's the count of playoff games Kornet has played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+  PRED: select count(*) from player_boxscores where player_name = 'luke kornet';
+
+✓ Q:    In how many postseason games has Kornet taken the floor?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Luke Kornet';
+  PRED: select count(*) from player_boxscores where player_name = 'luke kornet';
+
+✓ Q:    How many playoff games has Oshae Brissett played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+  PRED: select count(*) from player_boxscores where player_name = 'oshae brissett';
+
+✓ Q:    How many times has Brissett suited up in the postseason?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Oshae Brissett';
+  PRED: select count(*) from player_boxscores where player_name = 'oshae brissett';
+
+✓ Q:    What is the number of playoff games Mykhailiuk has played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+  PRED: select count(*) from player_boxscores where player_name = 'svi mykhailiuk';
+
+✓ Q:    How many games has Mykhailiuk appeared in this postseason?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Svi Mykhailiuk';
+  PRED: select count(*) from player_boxscores where player_name = 'svi mykhailiuk';
+
+✓ Q:    In how many postseason games has Queta taken the floor?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+  PRED: select count(*) from player_boxscores where player_name = 'neemias queta';
+
+✓ Q:    How many playoff games has Queta appeared in?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Neemias Queta';
+  PRED: select count(*) from player_boxscores where player_name = 'neemias queta';
+
+✓ Q:    How many times has Springer suited up in the postseason?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+  PRED: select count(*) from player_boxscores where player_name = 'jaden springer';
+
+✓ Q:    How many postseason contests has Jaden Springer featured in?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jaden Springer';
+  PRED: select count(*) from player_boxscores where player_name = 'jaden springer';
+
+✓ Q:    How many games has Tillman appeared in this postseason?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+  PRED: select count(*) from player_boxscores where player_name = 'xavier tillman';
+
+✓ Q:    What's the total number of playoff games Xavier Tillman has played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Xavier Tillman';
+  PRED: select count(*) from player_boxscores where player_name = 'xavier tillman';
+
+✓ Q:    How many playoff games has Walsh appeared in?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+  PRED: select count(*) from player_boxscores where player_name = 'jordan walsh';
+
+✓ Q:    In how many playoff games has Jordan Walsh played?
+  GT:   SELECT COUNT(*) FROM player_boxscores WHERE PLAYER_NAME = 'Jordan Walsh';
+  PRED: select count(*) from player_boxscores where player_name = 'jordan walsh';
+
+✗ Q:    Who dropped 20-plus in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 20
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Who hit the 20-point mark or higher in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 20
+  PRED: select player_name, game_id from player_boxscores where pts >= 20
+
+✗ Q:    Who handed out 5-plus assists in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 5
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Who racked up 5 assists or more in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 5
+  PRED: select player_name, game_id from player_boxscores where ast >= 5
+
+✗ Q:    Who hauled in 5-plus boards in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 5
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Who collected 5 rebounds or more in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 5
+  PRED: select player_name, game_id from player_boxscores where reb >= 5
+
+✓ Q:    Who notched 10 or more points in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 10
+  PRED: select player_name, game_id from player_boxscores where pts >= 10
+
+✓ Q:    Who put up 10 or more points in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 10
+  PRED: select player_name, game_id from player_boxscores where pts >= 10
+
+✓ Q:    Who notched 10 or more assists in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 10
+  PRED: select player_name, game_id from player_boxscores where ast >= 10
+
+✓ Q:    Who dished out 10 or more assists in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 10
+  PRED: select player_name, game_id from player_boxscores where ast >= 10
+
+✓ Q:    Who notched 10 or more rebounds in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 10
+  PRED: select player_name, game_id from player_boxscores where reb >= 10
+
+✓ Q:    Who pulled down 10 or more rebounds in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 10
+  PRED: select player_name, game_id from player_boxscores where reb >= 10
+
+✗ Q:    Who dropped 13-plus in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 13
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Who hit the 13-point mark or higher in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS >= 13
+  PRED: select player_name, game_id from player_boxscores where pts >= 13
+
+✗ Q:    Who handed out 9-plus assists in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 9
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Who racked up 9 assists or more in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST >= 9
+  PRED: select player_name, game_id from player_boxscores where ast >= 9
+
+✗ Q:    Who hauled in 12-plus boards in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 12
+  PRED: select player_name from boxscores order by pts desc limit 1;
+
+✓ Q:    Who collected 12 rebounds or more in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB >= 12
+  PRED: select player_name, game_id from player_boxscores where reb >= 12
+
+✓ Q:    Who finished with 19 points or fewer in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 19
+  PRED: select player_name, game_id from player_boxscores where pts <= 19
+
+✓ Q:    Who stayed at or under 19 points in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 19
+  PRED: select player_name, game_id from player_boxscores where pts <= 19
+
+✓ Q:    Who finished with 16 assists or fewer in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 16
+  PRED: select player_name, game_id from player_boxscores where ast <= 16
+
+✓ Q:    Who stayed at or under 16 assists in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 16
+  PRED: select player_name, game_id from player_boxscores where ast <= 16
+
+✗ Q:    Who finished with 9 boards or fewer in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 9
+  PRED: select player_name, game_id from player_boxscores where pts <= 9
+
+✓ Q:    Who stayed at or under 9 rebounds in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 9
+  PRED: select player_name, game_id from player_boxscores where reb <= 9
+
+✓ Q:    Who was kept to 5 points or fewer in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 5
+  PRED: select player_name, game_id from player_boxscores where pts <= 5
+
+✓ Q:    Who put up 5 or fewer points in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 5
+  PRED: select player_name, game_id from player_boxscores where pts <= 5
+
+✓ Q:    Who was kept to 13 assists or fewer in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 13
+  PRED: select player_name, game_id from player_boxscores where ast <= 13
+
+✓ Q:    Who dished out 13 or fewer assists in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 13
+  PRED: select player_name, game_id from player_boxscores where ast <= 13
+
+✓ Q:    Who was kept to 16 rebounds or fewer in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 16
+  PRED: select player_name, game_id from player_boxscores where reb <= 16
+
+✓ Q:    Who pulled down 16 or fewer rebounds in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 16
+  PRED: select player_name, game_id from player_boxscores where reb <= 16
+
+✓ Q:    Who finished with 14 points or fewer in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 14
+  PRED: select player_name, game_id from player_boxscores where pts <= 14
+
+✓ Q:    Who stayed at or under 14 points in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE PTS <= 14
+  PRED: select player_name, game_id from player_boxscores where pts <= 14
+
+✓ Q:    Who finished with 7 assists or fewer in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 7
+  PRED: select player_name, game_id from player_boxscores where ast <= 7
+
+✓ Q:    Who stayed at or under 7 assists in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE AST <= 7
+  PRED: select player_name, game_id from player_boxscores where ast <= 7
+
+✓ Q:    Who finished with 6 boards or fewer in a single playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 6
+  PRED: select player_name, game_id from player_boxscores where reb <= 6
+
+✓ Q:    Who stayed at or under 6 rebounds in a playoff game?
+  GT:   SELECT PLAYER_NAME, GAME_ID FROM player_boxscores WHERE REB <= 6
+  PRED: select player_name, game_id from player_boxscores where reb <= 6
+
+Exact match: 205/220 = 93.18%
