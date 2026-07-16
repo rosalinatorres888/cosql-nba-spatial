@@ -31,11 +31,12 @@ Three implementations solve the same task over the same annotated corpus. One us
 
 | Architecture | Approach | Training Data | Execution Accuracy |
 |---|---|---|---|
-| ☘️ Few-Shot LLM Pipeline | In-context reasoning (Claude Opus 4.8) | None — zero-shot weights | **100%** own · **83.2%** cross-schema |
-| GRU Encoder-Decoder | Supervised seq2seq + Bahdanau attention | 880 NL/SQL pairs | **97.3%** (post-fix) |
-| Transformer | Supervised encoder-decoder | 880 NL/SQL pairs | **92.7%** (preliminary) |
+| ☘️ Few-Shot LLM Pipeline | In-context reasoning (Claude Opus 4.8) | None — zero-shot weights | **88.5%** own (leakage-free) · **31.8%** strict / **80.0%** question-faithful cross-schema |
+| GRU Encoder-Decoder | Supervised seq2seq + Bahdanau attention | 880 NL/SQL pairs | **97.3%** (paraphrase-level†) |
+| Transformer | Supervised encoder-decoder | 880 NL/SQL pairs | **92.7%** (paraphrase-level†, preliminary) |
 
-> The 100% and 83.2% are not the same kind of number as 97.3% and 92.7% — and that difference is the whole point.
+> † Every test pair's exact gold SQL appears in the training set (per-template split) — these numbers measure paraphrase robustness, not SQL generalization. See [`docs/TEMPLATE_OVERLAP.md`](docs/TEMPLATE_OVERLAP.md).
+> These are not the same kind of number as each other — and that difference is the whole point.
 > See [How Architectures Generalize Differently](#how-architectures-generalize-differently).
 
 ---
@@ -124,16 +125,19 @@ A supervised decoder can only emit tokens from the vocabulary its training data 
 
 | Model | Test Set | Execution Accuracy | Verified |
 |---|---|---|---|
-| Few-shot (Rosalina) | Own 28-pair held-out | **100%** (28/28) | ✅ Independent |
-| Few-shot (Rosalina) | Craig's 220-pair, cold (unseen schema, no retraining) | **83.2%** (183/220) | ✅ Independent |
+| Few-shot (Rosalina) | Own 26-pair held-out (conversation-level, leakage-free) | **88.5%** (23/26) | ✅ Audited + reproduced twice |
+| Few-shot (Rosalina) | Craig's 220-pair, boxscores schema, strict matcher | **31.8%** strict (70/220) · **80.0%** question-faithful (176/220) | ✅ Audited |
 | GRU (Craig) — original | Craig's 220-pair | 0% | ✅ Bug identified |
-| GRU (Craig) — fixed | Craig's 220-pair | **97.3%** (214/220) | ✅ Independent |
-| Transformer (Sean) | Craig's 220-pair | **92.7%** (204/220) | ⏳ Pending re-verification |
+| GRU (Craig) — fixed | Craig's 220-pair (paraphrase-level†) | **97.3%** (214/220) | ✅ Independent |
+| Transformer (Sean) | Craig's 220-pair (paraphrase-level†) | **92.7%** (204/220) | ⏳ Pending re-verification |
 
-**Notes:**
+**Notes (updated after evaluation audit, 2026-07-14):**
+- **Few-shot own-schema:** a previously reported 100% (28/28) was inflated by three evaluator issues — test items in the few-shot pool (leakage), follow-up turns given gold SQL instead of the model's own prediction, and a lenient numeric-fallback matcher. The corrected protocol (conversation-level split, train-only example pool, self-conditioned multi-turn, strict matching) yields 23/26 = 88.5%, reproduced twice. Details in the [individual repo](https://github.com/rosalinatorres888/nba-cosql-spatial-pipeline).
+- **Few-shot cross-schema:** the previously reported 83.2% was an execution *rate* (predicted SQL ran without error) computed with the wrong schema in the prompt — not accuracy. Under strict gold-result matching with the boxscores schema: 31.8% vs gold as written. Failure taxonomy: 48.2% of "failures" are cases where the gold SQL omits a constraint the question explicitly states (e.g. "in a playoff game" with no `season_type` filter) and the model correctly adds it; 4.5% of gold queries cannot execute at all (placeholders, nonexistent tables). Counting question-faithful predictions as correct: 80.0%. Reproduce with `python evaluation/evaluate_crossschema_strict.py`.
+- **† Paraphrase-level:** the shared per-template 80/20 split places every test pair's exact gold SQL string in training (verified 220/220) — see [`docs/TEMPLATE_OVERLAP.md`](docs/TEMPLATE_OVERLAP.md). A template-disjoint split is the recommended M3 addition for all three models.
 - The GRU's 0% was caused by `preprocess_sentence()` stripping SQL syntax characters from both input and output. Fix: `preprocess_nl()` / `preprocess_sql()` split.
-- The few-shot pipeline's 83.2% was tested on Craig's schema (`boxscores` / `player_boxscores`) with no prompt changes and no retraining.
-- Sean's 92.7% is self-reported in `models/transformer/README.md` and has not yet completed the same independent re-run against the live DB that Craig's fixed number did.
+- Sean's 92.7% is self-reported in `models/transformer/README.md` and has not yet completed an independent re-run against the live DB.
+- The 880-pair corpus needs curation before M3: 10/220 test gold queries are non-executable and ~48% omit question-stated constraints — this penalizes semantically-correct models and rewards memorization of flawed gold.
 
 ---
 
