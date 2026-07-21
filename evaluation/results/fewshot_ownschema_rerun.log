@@ -1,0 +1,172 @@
+============================================================
+EXECUTION ACCURACY EVALUATION
+CoSQL NBA Spatial — NL→SQL Inference
+============================================================
+
+Dataset:   138 approved pairs in 89 conversations
+Train:     71 conversations / 112 pairs
+Test:      18 conversations / 26 pairs
+Loaded 112 approved examples across 8 query classes
+
+✅ Connected to nba_spatial
+
+Running inference on 26 test pairs...
+
+  [  1/26] ⚠️  Multi-Turn Coreference (turn 1)
+         NL:   What was Kristaps Porzingis shooting percentage from the paint?
+         Gold: SELECT CAST(SUM(CASE WHEN made_flag = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) 
+         Pred: SELECT CAST(SUM(CASE WHEN made_flag=1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) FR
+
+  [  2/26] ⚠️  Multi-Turn Coreference (turn 2)
+         NL:   How does that compare to his 3-point percentage?
+         Gold: SELECT CASE WHEN ABS(x) <= 80 AND y <= 190 THEN 'paint' WHEN shot_type = '3PT Fi
+         Pred: SELECT CAST(SUM(CASE WHEN made_flag=1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) FR
+
+  [  3/26] ✅ Player/Entity
+         NL:   Show all players with more than 500 attempts.
+         Gold: SELECT p.name, COUNT(*) as attempts FROM shot_charts sc JOIN players p ON sc.pla
+         Pred: SELECT p.name, COUNT(*) AS attempts FROM shot_charts sc JOIN players p ON sc.pla
+
+  [  4/26] ✅ Player/Entity (turn 1)
+         NL:   How many shots did Jrue Holiday take from 3?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE player_id = (SELECT player_id FROM player
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE player_id = (SELECT player_id FROM player
+
+  [  5/26] ✅ Player/Entity (turn 2)
+         NL:   What about Al Horford?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE player_id = (SELECT player_id FROM player
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE player_id = (SELECT player_id FROM player
+
+  [  6/26] ✅ Shot Characteristics (turn 1)
+         NL:   How many shots were taken from beyond 28 feet?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE distance > 28
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE distance > 28
+
+  [  7/26] ✅ Shot Characteristics (turn 2)
+         NL:   How many of those went in?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE distance > 28 AND made_flag = 1
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE distance > 28 AND made_flag = 1
+
+  [  8/26] ✅ Shot Characteristics
+         NL:   How many shots came from the left side of the court?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE x < 0
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE x < 0
+
+  [  9/26] ✅ Spatial Zone (turn 1)
+         NL:   Show me all mid-range shot attempts.
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE distance BETWEEN 8 AND 22
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE distance BETWEEN 8 AND 22
+
+  [ 10/26] ✅ Spatial Zone (turn 2)
+         NL:   What percentage of those were made?
+         Gold: SELECT CAST(SUM(CASE WHEN made_flag = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) 
+         Pred: SELECT CAST(SUM(CASE WHEN made_flag=1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) FR
+
+  [ 11/26] ⚠️  Comparative Aggregation
+         NL:   How does paint FG% compare to mid-range FG%?
+         Gold: SELECT CASE WHEN ABS(x) <= 80 AND y <= 190 THEN 'paint' WHEN distance BETWEEN 8 
+         Pred: SELECT CAST(SUM(CASE WHEN ABS(x) <= 80 AND y <= 190 AND made_flag = 1 THEN 1 ELS
+
+  [ 12/26] ✅ Game/Matchup Context
+         NL:   How many shots in games played in the first week of November 2023?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE game_id IN (SELECT game_id FROM games WHE
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE game_id IN (SELECT game_id FROM games WHE
+
+  [ 13/26] ✅ Temporal Scope (turn 1)
+         NL:   How many attempts in the final 2 minutes of Q4?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE period = 4 AND (minutes_remaining * 60 + 
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE period = 4 AND (minutes_remaining * 60 + 
+
+  [ 14/26] ✅ Temporal Scope (turn 2)
+         NL:   Only made shots in that window.
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE period = 4 AND (minutes_remaining * 60 + 
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE period = 4 AND (minutes_remaining * 60 + 
+
+  [ 15/26] ✅ Game/Matchup Context
+         NL:   How many shots came from regular season games?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE game_id IN (SELECT game_id FROM games WHE
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE game_id IN (SELECT game_id FROM games WHE
+
+  [ 16/26] ✅ Temporal Scope
+         NL:   How many games went to overtime?
+         Gold: SELECT COUNT(DISTINCT game_id) FROM shot_charts WHERE period >= 5
+         Pred: SELECT COUNT(*) FROM (SELECT game_id FROM shot_charts WHERE period >= 5 GROUP BY
+
+  [ 17/26] ✅ Temporal Scope
+         NL:   Compare first half vs second half attempts.
+         Gold: SELECT CASE WHEN period IN (1,2) THEN 'first_half' ELSE 'second_half' END as hal
+         Pred: SELECT CASE WHEN period IN (1,2) THEN 'first_half' ELSE 'second_half' END AS hal
+
+  [ 18/26] ✅ Player/Entity
+         NL:   Who had the best shooting percentage among players with at least 100 attempts?
+         Gold: SELECT p.name, CAST(SUM(CASE WHEN sc.made_flag = 1 THEN 1 ELSE 0 END) AS FLOAT) 
+         Pred: SELECT p.name, CAST(SUM(CASE WHEN sc.made_flag=1 THEN 1 ELSE 0 END) AS FLOAT) / 
+
+  [ 19/26] ✅ Player/Entity
+         NL:   Which player took the most shots in the paint?
+         Gold: SELECT p.name, COUNT(*) as paint_attempts FROM shot_charts sc JOIN players p ON 
+         Pred: SELECT p.name, COUNT(*) as attempts FROM shot_charts s JOIN players p ON s.playe
+
+  [ 20/26] ✅ Simple Aggregation
+         NL:   How many games are in the dataset?
+         Gold: SELECT COUNT(DISTINCT game_id) FROM games
+         Pred: SELECT COUNT(*) FROM games
+
+  [ 21/26] ✅ Spatial Zone (turn 1)
+         NL:   How many shot attempts came from inside the restricted area?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE distance <= 4 OR (ABS(x) <= 80 AND y <= 1
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE distance <= 4 OR (ABS(x) <= 80 AND y <= 1
+
+  [ 22/26] ✅ Spatial Zone (turn 2)
+         NL:   Which players had the most attempts there?
+         Gold: SELECT p.name, COUNT(*) as attempts FROM shot_charts sc JOIN players p ON sc.pla
+         Pred: SELECT p.name, COUNT(*) as attempts FROM shot_charts sc JOIN players p ON sc.pla
+
+  [ 23/26] ✅ Temporal Scope
+         NL:   How many shots in playoff games?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE game_id IN (SELECT game_id FROM games WHE
+         Pred: SELECT COUNT(*) FROM shot_charts sc JOIN games g ON sc.game_id = g.game_id WHERE
+
+  [ 24/26] ✅ Shot Characteristics (turn 1)
+         NL:   How many shots came from between 15 and 20 feet?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE distance BETWEEN 15 AND 20
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE distance BETWEEN 15 AND 20
+
+  [ 25/26] ✅ Shot Characteristics (turn 2)
+         NL:   How many were made from that distance?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE distance BETWEEN 15 AND 20 AND made_flag 
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE distance BETWEEN 15 AND 20 AND made_flag 
+
+  [ 26/26] ✅ Shot Characteristics (turn 3)
+         NL:   Were there any shots from half court or beyond?
+         Gold: SELECT COUNT(*) FROM shot_charts WHERE distance >= 47
+         Pred: SELECT COUNT(*) FROM shot_charts WHERE distance >= 47
+
+============================================================
+RESULTS
+============================================================
+
+  SQL validity rate:    26/26  (100.0%)
+  Execution accuracy:   23/26  (88.5%)
+
+  Per-class breakdown:
+  Query Class                   Test  Valid  Match     Acc
+  ------------------------------------------------------
+  Multi-Turn Coreference           2      2      0     0%
+  Player/Entity                    5      5      5   100%
+  Shot Characteristics             6      6      6   100%
+  Spatial Zone                     4      4      4   100%
+  Comparative Aggregation          1      1      0     0%
+  Game/Matchup Context             2      2      2   100%
+  Temporal Scope                   5      5      5   100%
+  Simple Aggregation               1      1      1   100%
+
+  Failed pairs (3):
+    [result_mismatch] Multi-Turn Coreference: What was Kristaps Porzingis shooting percentage from the pai
+    [result_mismatch] Multi-Turn Coreference: How does that compare to his 3-point percentage?
+    [result_mismatch] Comparative Aggregation: How does paint FG% compare to mid-range FG%?
+
+  Error log written to: /private/tmp/claude-501/-Users-rosalinatorres-Documents-mission-control-ALL-CoSQL/f8daa896-507e-46bf-9794-1182a0712178/scratchpad/indiv-repo/model/eval_errors.csv
+
+============================================================
+  ✅ STRONG — 88.5% execution accuracy on held-out test set
